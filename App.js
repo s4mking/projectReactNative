@@ -6,6 +6,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from './screens/HomeScreen';
 import TripScreen from './screens/TripScreen'
+import Direction from './screens/Direction';
+
 import AuthContext from './AuthContext';
 import { Ionicons } from '@expo/vector-icons';
 import { api, loadAuthorisationHeader } from "./helpers/axios";
@@ -134,7 +136,7 @@ console.log(auth)
               inactiveTintColor: 'gray',
             }}
           >
-            <Tab.Screen name="Home" component={HomeScreen} />
+            <Tab.Screen name="Home" component={Direction} />
             <Tab.Screen name="Trip" component={TripScreen} />
           </Tab.Navigator>
         </NavigationContainer>
