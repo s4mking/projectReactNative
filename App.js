@@ -4,6 +4,7 @@ import SignInScreen from './screens/SignInScreen';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import LoadScreen from './screens/LoadScreen';
 import HomeScreen from './screens/HomeScreen';
 import TripScreen from './screens/TripScreen'
 import Direction from './screens/Direction';
@@ -18,101 +19,56 @@ import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
 export default function App({ navigation }) {
   const auth = useSelector(state => state.auth)
+  const loading = useSelector(state => state.loading)
   const dispatch = useDispatch()
   useEffect(() => {
     // Fetch the token from storage then navigate to our appropriate place
+    dispatch({type:"LOADING"})
     AsyncStorage.getItem('email').then(email => {
       AsyncStorage.getItem('password').then(password => {
         if(email !== null && password!==null){
-        api
-      .post("/login", {
-        email:email,
-        password: password
+          api
+          .post("/login", {
+          email:email,
+          password: password
+          })
+          .then(res => {
+            console.log("this is the res")
+            console.log(res.data.token);
+            if (res.data.token != undefined) {
+              dispatch({type:"LOGIN",payload:{email:email,password:password,token:res.data.token}})
+              api
+              .get(`/api/user/me`, loadAuthorisationHeader(res.data.token))
+              .then(res => {
+                console.log(res.data)
+                let trips = res.data.trips
+                dispatch({type:"SET_USER",payload:{trips}})
+                dispatch({type:"END_LOADING"})
+                })
+              .catch(err => console.log(err));
+            }
+          })
+          .catch(err =>{
+          console.log(err)
+          })
+        }
       })
-      .then(res => {
-        console.log("this is the res")
-        console.log(res.data.token);
-        if (res.data.token != undefined) {
-          dispatch({type:"LOGIN",payload:{email:email,password:password,token:res.data.token}})
-      }
-
     }).catch(err =>{
-      console.log("kkk")
       console.log(err)
-    })
-  }
-  })
-}).catch(err =>{
-  console.log("kkk")
-  console.log(err)
-})
-  }, []);
+      })
+    }, []);
 
   useEffect(() => {
-console.log(auth)
-
-  }, [auth]);
-
-  // const authContext = useMemo(
-  //   () => ({
-  //     signIn: async ({email,password}) => {
-  //       console.log(email)
-  //       api
-  //     .post("/login", {
-  //       email:email,
-  //       password: password
-  //     })
-  //     .then(res => {
-  //       console.log("this is the res")
-  //       console.log(res.data.token);
-  //       if (res.data.token != undefined) {
-  //         AsyncStorage.setItem( "userToken", res.data.token)
-  //         dispatch({ type: 'SIGN_IN', token: res.data.token });
-  //       } else {
-  //         alert(
-  //           "Vous n'avez pas rentré un password et un email valide veuillez réessayer"
-  //         );
-  //       }
-  //     })
-  //     .catch(err =>{
-  //       console.log(err)
-  //     })
-  //       // In a production app, we need to send some data (usually username, password) to server and get a token
-  //       // We will also need to handle errors if sign in failed
-  //       // After getting token, we need to persist the token using `AsyncStorage`
-  //       // In the example, we'll use a dummy token
-
-        
-  //       // await AsyncStorage.setItem( "userToken", "dummy-auth-token")
-  //       // AsyncStorage.getItem('userToken').then((res)=>{
-  //       //   console.log("lkjfnkjnerz")
-  //       //   console.log(res)
-  //       // })
-  //     },
-  //     register: async data => {
-  //       console.log(data)
-  //     },
-  //     signOut: () => dispatch({ type: 'SIGN_OUT' }),
-  //     signUp: async data => {
-  //       console.log(data)
-  //       // In a production app, we need to send user data to server and get a token
-  //       // We will also need to handle errors if sign up failed
-  //       // After getting token, we need to persist the token using `AsyncStorage`
-  //       // In the example, we'll use a dummy token
-
-  //       dispatch({ type: 'SIGN_IN', token: 'dummy-auth-token' });
-  //       console.log(await AsyncStorage.getItem('userToken'))
-
-  //     },
-  //   }),
-  //   []
-  // );
+    console.log(loading)
+  },[loading])
   
   return (
     <>
-        {auth.token == null ? (
-          (<SignInScreen/>)
-        ):(
+    {loading.status ?
+    <LoadScreen />
+    : auth.token == null ? 
+      (<SignInScreen/>):
+      (
           <NavigationContainer>
           <Tab.Navigator
             screenOptions={({ route }) => ({
@@ -140,8 +96,8 @@ console.log(auth)
             <Tab.Screen name="Trip" component={TripScreen} />
           </Tab.Navigator>
         </NavigationContainer>
-        )}
+        )
+      }
       </>
-
   );
 };

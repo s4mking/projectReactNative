@@ -11,7 +11,6 @@ const TripScreen = () => {
   }, []);
   return ( 
     <View>
-      <Button onPress={() => AsyncStorage.removeItem('userToken')}>logout</Button>
       <Text>Hi it is the tripscreen</Text>
     </View>
   );

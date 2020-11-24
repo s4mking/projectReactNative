@@ -8,7 +8,7 @@ import MapView, {
   } from 'react-native-maps';
   import {Constants,Location} from 'expo';
   import haversine from "haversine";
-  import { useSelector } from 'react-redux'
+  import { connect, useSelector } from 'react-redux'
 import { api, loadAuthorisationHeader } from "../../helpers/axios";
 
 const LATITUDE_DELTA = 0.009;
@@ -49,7 +49,8 @@ class Direction extends Component {
   }
 
   componentDidMount() {
-
+    console.log("right here")
+    console.log(this.props.trips)
     //watcher to geoloc
     this.watchID = navigator.geolocation.watchPosition(
         position => {
@@ -305,4 +306,8 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Direction;
+const mapStateToProps = state => {
+  return { trips: state.trips };
+};
+
+export default connect(mapStateToProps)(Direction);
