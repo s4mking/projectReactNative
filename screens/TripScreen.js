@@ -1,21 +1,33 @@
 
-import React, { PureComponent, useEffect } from 'react'
+import React, { PureComponent, useEffect } from 'react';
 import { AsyncStorage, View,Text,TextInput,Button,StyleSheet } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
-import TripsComponent from '../components/TripsComponent'
+import TripsComponent from '../components/TripsComponent';
+import RNPickerSelect from 'react-native-picker-select';
+
 
 
 const TripScreen = () => {
   const trips = useSelector(state => state.trips.trips)
   const auth = useSelector(state => state.auth)
+  const currentTrip = useSelector(state => state.currentTrip)
   useEffect(() => {
-   console.log("trips screen")
-   console.log(auth)
-  }, []);
+  //  console.log("trips screen")
+  console.log("begin new trip")
+   console.log(currentTrip)
+  }, [currentTrip]);
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Voici la liste de vos différents trips</Text>
+      <RNPickerSelect
+            onValueChange={(value) => console.log(value)}
+            items={[
+                { label: 'Football', value: 'football' },
+                { label: 'Baseball', value: 'baseball' },
+                { label: 'Hockey', value: 'hockey' },
+            ]}
+        />
       <View style={styles.trips}>
         {trips.map((trip)=>
         <TripsComponent trip={trip} key={trip.title} />

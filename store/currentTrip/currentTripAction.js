@@ -1,5 +1,6 @@
-export const setNewCurrentTrip = () => ({
+export const setNewCurrentTrip = ({trip}) => ({
   type: 'NEW_CURRENT',
+  payload:{trip}
 });
 
 export const nextLoc = () => ({

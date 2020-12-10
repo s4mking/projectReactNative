@@ -4,18 +4,33 @@ import { AsyncStorage, View,Text,TextInput,Button, Alert,StyleSheet } from 'reac
 import { ScrollView } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 import LocationComponent from './LocationComponent';
+import { useDispatch } from 'react-redux'
 
 
 
 const TripsComponent = ({trip}) => {
+  const dispatch = useDispatch()
   const [showDetails, setShowDetails] = useState(false)
-  
+  const setTripCurrent = (trip) => {
+    console.log(trip)
+  }
   useEffect(() => {
-    console.log("kjljk")
-    console.log(trip.title)
+    dispatch({type:"NEW_CURRENT",payload:{trip:trip}})
   }, []);
   return (
     <View style={styles.trip}>
+      <Button
+        onPress={() => setTripCurrent(trip)}
+        title="Set this trip as current trip"
+        color="blue"
+        accessibilityLabel="Learn more about this purple button"
+        />
+         <Button
+        onPress={() => dispatch({type:"NEXT_LOC"})}
+        title="test"
+        color="blue"
+        accessibilityLabel="Learn more about this purple button"
+        />
       <View onStartShouldSetResponder={() => setShowDetails(!showDetails)}>
         <Text style={styles.centeredText}>{trip.title}</Text>
         <Text style={styles.centeredText}>

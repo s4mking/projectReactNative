@@ -37,3 +37,8 @@ const styles = StyleSheet.create({
     height: 200
   }
 });
+
+
+useEffect(() => {
+  console.log(loading)
+},[loading])

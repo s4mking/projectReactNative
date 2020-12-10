@@ -1,5 +1,5 @@
 import React, { Component, createContext,useReducer,useEffect, useMemo } from 'react';
-import { AsyncStorage, View,Text,TextInput,Button } from 'react-native';
+import { AsyncStorage, View,Text,TextInput,Button,StyleSheet } from 'react-native';
 import SignInScreen from './screens/SignInScreen';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
@@ -20,6 +20,7 @@ import { useSelector } from 'react-redux'
 export default function App({ navigation }) {
   const auth = useSelector(state => state.auth)
   const loading = useSelector(state => state.loading)
+  
   const dispatch = useDispatch()
   useEffect(() => {
     // Fetch the token from storage then navigate to our appropriate place
@@ -47,7 +48,8 @@ export default function App({ navigation }) {
                 dispatch({type:"SET_USER",payload:{trips}})
                 setTimeout(() => {
                 dispatch({type:"END_LOADING"})
-                }, 10000);
+
+                }, 100);
                 })
               .catch(err => console.log(err));
             }
@@ -74,7 +76,11 @@ export default function App({ navigation }) {
       (<SignInScreen/>):
       (
           <NavigationContainer>
+            <View style={styles.logout}>
+              <Ionicons name={'ios-log-out'} style={{zIndex: 100000,marginTop:30,marginLeft:20}} color={'gray'} size={50} />
+            </View>
           <Tab.Navigator
+          
             screenOptions={({ route }) => ({
               tabBarIcon: ({ focused, color, size }) => {
                 let iconName;
@@ -85,8 +91,9 @@ export default function App({ navigation }) {
                     : 'ios-home';
                 } else if (route.name === 'Trip') {
                   iconName = focused ? 'ios-list-box' : 'ios-list';
+                }else if (route.name === 'Add') {
+                  iconName = focused ? 'ios-add-circle' : 'ios-add-circle-outline';
                 }
-    
                 // You can return any component that you like here!
                 return <Ionicons name={iconName} size={size} color={color} />;
               },
@@ -98,6 +105,7 @@ export default function App({ navigation }) {
           >
             <Tab.Screen name="Home" component={Direction} />
             <Tab.Screen name="Trip" component={TripScreen} />
+            <Tab.Screen name="Add" component={Direction} />
           </Tab.Navigator>
         </NavigationContainer>
         )
@@ -105,3 +113,15 @@ export default function App({ navigation }) {
       </>
   );
 };
+
+
+
+const styles = StyleSheet.create({
+  logout: {
+    position: 'relative',
+    width:500,
+    height:80,
+    zIndex: 100,
+    backgroundColor: "#f2f2f2",
+  }
+});

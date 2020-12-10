@@ -10,7 +10,7 @@ const rootReducer = combineReducers({
   auth: authReducer,
   loading:loadingReducer,
   trips:userReducer,
-  currentTrio:currentTripReducer
+  currentTrip:currentTripReducer
 });
 
 export default rootReducer;
