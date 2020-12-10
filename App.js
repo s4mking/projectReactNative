@@ -42,8 +42,12 @@ export default function App({ navigation }) {
               .then(res => {
                 console.log(res.data)
                 let trips = res.data.trips
+                console.log("work here")
+                console.log(trips)
                 dispatch({type:"SET_USER",payload:{trips}})
+                setTimeout(() => {
                 dispatch({type:"END_LOADING"})
+                }, 10000);
                 })
               .catch(err => console.log(err));
             }

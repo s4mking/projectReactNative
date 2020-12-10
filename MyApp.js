@@ -5,7 +5,6 @@ import SignInScreen from './screens/SignInScreen';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import HomeScreen from './screens/HomeScreen';
-const AuthContext = React.createContext();
 const Stack = createStackNavigator();
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';

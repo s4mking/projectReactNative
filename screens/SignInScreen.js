@@ -1,4 +1,4 @@
-import React, { PureComponent, useContext,createContext,useEffect } from 'react'
+import React, { PureComponent, useContext,createContext,useEffect,useState } from 'react'
 import { AsyncStorage, View,Text,TextInput,Button,StyleSheet } from 'react-native';
 import { useDispatch } from 'react-redux'
 import AuthContext from '../AuthContext';
@@ -7,41 +7,11 @@ import { api, loadAuthorisationHeader } from "../helpers/axios";
 
 
 const SignInScreen = (props) => {
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const dispatch = useDispatch()
   const test = useSelector(state => state.auth)
 
-  useEffect(() => {
-    // console.log(test)
-    // Fetch the token from storage then navigate to our appropriate place
-//     AsyncStorage.getItem('email').then(email => {
-//       AsyncStorage.getItem('password').then(password => {
-//         if(email !== null && password!==null){
-//         api
-//       .post("/login", {
-//         email:email,
-//         password: password
-//       })
-//       .then(res => {
-//         console.log("this is the res")
-//         console.log(res.data.token);
-//         if (res.data.token != undefined) {
-//           store.actions.setToken(res.data.token)
-//       }
-
-//     }).catch(err =>{
-//       console.log("kkk")
-//       console.log(err)
-//     })
-//   }
-//   })
-// }).catch(err =>{
-//   console.log("kkk")
-//   console.log(err)
-// })
-
-  }, []);
   const login = (email,password) => {
     console.log(email)
     console.log(password)
