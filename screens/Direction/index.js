@@ -1,120 +1,101 @@
-import React, { PureComponent, useEffect,useState,Component } from 'react'
-import { AppRegistry, StyleSheet, Dimensions, Image, Text,View, StatusBar, TouchableOpacity,Alert } from "react-native";
+import React, { Component,useState,useEffect } from 'react';
+import MapViewDirections from 'react-native-maps-directions';
+import { StyleSheet, Text,View, TouchableOpacity,Alert } from "react-native";
 import MapView, {
-    Marker,
-    AnimatedRegion,
     Polyline,
     PROVIDER_GOOGLE
   } from 'react-native-maps';
-  import {Constants,Location} from 'expo';
   import haversine from "haversine";
-  import { connect, useSelector } from 'react-redux'
-import { api, loadAuthorisationHeader } from "../../helpers/axios";
+  import { connect } from 'react-redux';
 
 const LATITUDE_DELTA = 0.009;
 const LONGITUDE_DELTA = 0.009;
-const LATITUDE = 49.166537;
-const LONGITUDE = 2.435575;
 
-class Direction extends Component {
-  constructor(props) {
-    super(props);
-    this.findCurrentLocation();
-    this.state = {
-        markers : [
-            {
-              latitude: 49.169617,
-              longitude: 2.416606,
-              title: 'New place',
-              subtitle: 'My new place'
-            }
-          ],
-      latitude: 49.171320,
-      longitude: 2.419825,
-      routeCoordinates: [],
-    distanceTravelled: 0,
-    distanceBetween: 0,
-      error: null,
-      concat: null,
-      coords:[],
-      x: 'false',
-      prevLatLng: {},
-      cordLatitude:49.166537,
-      cordLongitude:2.435575,
-      target:0
-    };
-
-    this.mergeLot = this.mergeLot.bind(this);
-
-  }
-
-  componentDidMount() {
-    console.log("right here")
-    console.log(this.props.trips)
-    //watcher to geoloc
-    this.watchID = navigator.geolocation.watchPosition(
-        position => {
-          const { routeCoordinates, distanceTravelled, distanceBetween } = this.state;
-          const { latitude, longitude } = position.coords;
-       
-          const newCoordinate = {
-            latitude,
-            longitude
-          };
+function Direction(props) {
   
-          if (Platform.OS === "android") {
-            if (this.marker) {
-                this.marker.animateMarkerToCoordinate(
-                  newCoordinate,
-                     500
-                );
-              // this.marker._component.animateMarkerToCoordinate(
-              //   newCoordinate,
-              //   500
-              // );
+    const [markers,setMarkers]= useState([
+      {
+        latitude: 49.169617,
+        longitude: 2.416606,
+        title: 'New place',
+        subtitle: 'My new place'
+      }
+    ]);
+    const [latitude,setLatitude]= useState(49.171320);
+    const [longitude,setLongitude]= useState(2.419825);
+    const [routeCoordinates,setRouteCoordinates]= useState([]);
+    const [distanceTravelled,setDistanceTravelled]= useState(0);
+    const [distanceBetween,setDistanceBetween]= useState(0);
+    const [prevLatLng,setPrevLatLng]= useState({});
+    const [cordLatitude,setCordLatitude]= useState(49.166537);
+    const [cordLongitude,setCordLongitude]= useState(2.435575);
+    const [x,setX]= useState(false);
+    const [marker,setMarker]= useState();
+    const [target,setTarget]= useState(0);
+    const [error,setError]= useState(null);
+    const [concat,setConcat]= useState(null);
+
+    useEffect(()=>{
+      console.log("right here")
+      console.log(props.trips)
+      //watcher to geoloc
+      watchID = navigator.geolocation.watchPosition(
+          position => {
+            const { latitude, longitude } = position.coords;
+         
+            const newCoordinate = {
+              latitude,
+              longitude
+            };
+    
+            if (Platform.OS === "android") {
+              if (marker) {
+                  marker.animateMarkerToCoordinate(
+                    newCoordinate,
+                       500
+                  );
+                // marker._component.animateMarkerToCoordinate(
+                //   newCoordinate,
+                //   500
+                // );
+              }
+            } else {
+              coordinate.timing(newCoordinate).start();
             }
-          } else {
-            coordinate.timing(newCoordinate).start();
+    
+              setLatitude(latitude)
+              setLongitude(longitude)
+              setRouteCoordinates(routeCoordinates.concat([newCoordinate]))
+              setDistanceBetween(calcCrow())
+             setTarget(detectDestination())
+              setDistanceTravelled(distanceTravelled + calcDistance(newCoordinate))
+              setPrevLatLng(newCoordinate)
+          },
+          error => console.log(error),
+          {
+            enableHighAccuracy: true,
+            timeout: 20000,
+            maximumAge: 1000,
+            distanceFilter: 10
           }
-  
-          this.setState({
-            latitude,
-            longitude,
-            routeCoordinates: routeCoordinates.concat([newCoordinate]),
-            distanceBetween: this.calcCrow(),
-           target: this.detectDestination(),
-            distanceTravelled:
-              distanceTravelled + this.calcDistance(newCoordinate),
-            prevLatLng: newCoordinate
-          });
-        },
-        error => console.log(error),
-        {
-          enableHighAccuracy: true,
-          timeout: 20000,
-          maximumAge: 1000,
-          distanceFilter: 10
-        }
-      );
-    navigator.geolocation.getCurrentPosition(
-       (position) => {
-         this.setState({
-           latitude: position.coords.latitude,
-           longitude: position.coords.longitude,
-           error: null,
-         });
-         this.mergeLot();
-       },
-       (error) => this.setState({ error: error.message }),
-       { enableHighAccuracy: false, timeout: 200000, maximumAge: 1000 },
-     );
-   }
+        );
+      navigator.geolocation.getCurrentPosition(
+         (position) => {
+            setLatitude(position.coords.latitude);
+             setLongitude(position.coords.longitude);
+             setError(null);
+           mergeLot();
+         },
+         (error) => setError(error.message),
+         { enableHighAccuracy: false, timeout: 200000, maximumAge: 1000 },
+       );
+    },[])
 
   //in future need to separate in function
-  detectDestination(){
-    console.log(this.state.distanceBetween)
+  const detectDestination = (e)=>{
+    console.log(distanceBetween)
     console.log("distance entre")
-    if(this.state.distanceBetween == 332){
+    if(distanceBetween == 332){
       Alert.alert(
         'Vous êtes arrivés'
     )
@@ -122,15 +103,15 @@ class Direction extends Component {
   };
 
   //Caculate distance
-  calcCrow(){
-    if ((this.state.latitude == this.state.markers[0].latitude) && (this.state.longitude == this.state.markers[0].longitude)) {
+  const calcCrow = (e)=>{
+    if ((latitude == markers[0].latitude) && (longitude == markers[0].longitude)) {
       return 0;
     }
     else {
       var unit = 'K'
-      var radlat1 = Math.PI * this.state.latitude/180;
-      var radlat2 = Math.PI * this.state.markers[0].latitude/180;
-      var theta = this.state.longitude-this.state.markers[0].longitude;
+      var radlat1 = Math.PI * latitude/180;
+      var radlat2 = Math.PI * markers[0].latitude/180;
+      var theta = longitude-markers[0].longitude;
       var radtheta = Math.PI * theta/180;
       var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
       if (dist > 1) {
@@ -141,7 +122,7 @@ class Direction extends Component {
       dist = dist * 60 * 1.1515;
       if (unit=="K") { dist = dist * 1.609344 }
       console.log(dist.toFixed(2));
-      if(dist.toFixed(2) < 0.30){
+      if(dist.toFixed(2) < 0.10){
         Alert.alert(
           'Vous êtes arrivés'
       )
@@ -150,26 +131,26 @@ class Direction extends Component {
     }
   };
 
-//Harversine
-  mergeLot(){
-    if (this.state.latitude != null && this.state.longitude!=null)  
+// //Harversine
+const mergeLot = (e)=>{
+    if (latitude != null && longitude!=null)  
      {
-       let concatLot = this.state.latitude +","+this.state.longitude
-       this.setState({
-         concat: concatLot
-       }, () => {
-         this.getDirections(concatLot, this.state.markers[0].latitude+","+this.state.markers[0].longitude);
-       });
+       let concatLot = latitude +","+longitude
+      
+         setConcat(concatLot)
+         //normalement  'est async la
+         getDirections(concatLot, markers[0].latitude+","+markers[0].longitude);
+     
      }
    }
 
-   calcDistance = newLatLng => {
-    const { prevLatLng } = this.state;
+   const calcDistance = newLatLng => {
     return haversine(prevLatLng, newLatLng) || 0;
   };
 
   //Get direction between 2 pins
-   async getDirections(startLoc, destinationLoc) {
+  
+  const getDirections = async (startLoc, destinationLoc) => {
          try {
              let resp = await fetch(`https://maps.googleapis.com/maps/api/directions/json?origin=${ startLoc }&destination=${ destinationLoc }`)
              let respJson = await resp.json();
@@ -180,41 +161,26 @@ class Direction extends Component {
                      longitude : point[1]
                  }
              })
-             this.setState({coords: coords})
-             this.setState({x: "true"})
+             setCoords(coords)
+             setX("true")
              console.log(coords)
              return coords
          } catch(error) {
            console.log('passe')
-             this.setState({x: "error"})
+             setX("error")
              return error
          }
      }
 
      //Map region with autoupdate 
-     getMapRegion = () => ({
-        latitude: this.state.latitude,
-        longitude: this.state.longitude,
+     const getMapRegion = (e) => ({
+        latitude: latitude,
+        longitude: longitude,
         latitudeDelta: LATITUDE_DELTA,
         longitudeDelta: LONGITUDE_DELTA
       });
-      findCurrentLocation = () =>{
-        navigator.geolocation.getCurrentPosition(
-            position => {
-                const latitude = position.coords.latitude;
-                const longitude = position.coords.longitude;
-                this.setState({
-                    latitude,
-                    longitude
-                });
-            },
-            { enableHighAccuracy: true , timeout: 20000, maximumAge: 1000 }
-        );
-          };
   
-  render() {
-
-    return (
+      return (
         <View style={styles.container}>
         <MapView
         style={styles.map}
@@ -222,49 +188,36 @@ class Direction extends Component {
         showUserLocation
         followUserLocation
         loadingEnabled
-        region={this.getMapRegion()}
+        region={getMapRegion()}
       >
-          <Polyline coordinates={this.state.routeCoordinates} strokeWidth={5} />
-
-      {!!this.state.latitude && !!this.state.longitude && <MapView.Marker
-         coordinate={{"latitude":this.state.latitude,"longitude":this.state.longitude}}
+<MapViewDirections
+    origin={{"latitude":latitude,"longitude":longitude}}
+    destination={{"latitude":markers[0].latitude,"longitude":markers[0].longitude}}
+    apikey="AIzaSyBBb9bOEPqf7g1NSx-TwAoAy-WdoiY4MvY"
+  />
+      {!!latitude && !!longitude && <MapView.Marker
+         coordinate={{"latitude":latitude,"longitude":longitude}}
          title={"Your Location"}
        />}
 
-       {!!this.state.cordLatitude && !!this.state.cordLongitude && <MapView.Marker
-          coordinate={{"latitude":this.state.markers[0].latitude,"longitude":this.state.markers[0].longitude}}
+       {!!cordLatitude && !!cordLongitude && <MapView.Marker
+          coordinate={{"latitude":markers[0].latitude,"longitude":markers[0].longitude}}
           title={"Your Destination"}
         />}
-
-       {!!this.state.latitude && !!this.state.longitude && this.state.x == 'true' && <MapView.Polyline
-            coordinates={this.state.coords}
-            strokeWidth={2}
-            strokeColor="red"/>
-        }
-
-        {!!this.state.latitude && !!this.state.longitude && this.state.x == 'error' && <MapView.Polyline
-          coordinates={[
-              {latitude: this.state.latitude, longitude: this.state.longitude},
-              {latitude: this.state.markers[0].latitude, longitude: this.state.markers[0].longitude},
-          ]}
-          strokeWidth={2}
-          strokeColor="red"/>
-         }
       </MapView>
       <View style={styles.buttonContainer}>
           <TouchableOpacity style={[styles.bubble, styles.button]}>
             <Text style={styles.bottomBarContent}>
-              Parcouru {parseFloat(this.state.distanceTravelled).toFixed(2)} km
+              Parcouru {parseFloat(distanceTravelled).toFixed(2)} km
             </Text>
             <Text style={styles.bottomBarContent}>
-              Il reste {this.state.distanceBetween} km
+              Il reste {distanceBetween} km
             </Text>
           </TouchableOpacity>
         </View>
     </View>
     );
   }
-}
 
 const styles = StyleSheet.create({
   map: {
