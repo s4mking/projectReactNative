@@ -3,21 +3,36 @@ import React, { PureComponent, useEffect } from 'react';
 import { AsyncStorage, View,Text,TextInput,Button,StyleSheet } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
+import { Ionicons } from '@expo/vector-icons';
+
 import TripsComponent from '../components/TripsComponent';
 import RNPickerSelect from 'react-native-picker-select';
+import { useDispatch } from 'react-redux'
 
 
 
 const TripScreen = () => {
   const trips = useSelector(state => state.trips.trips)
   const auth = useSelector(state => state.auth)
+  const dispatch = useDispatch()
   const currentTrip = useSelector(state => state.currentTrip)
+
+  const logout = () => {
+    AsyncStorage.removeItem('email').then(email=>{
+      AsyncStorage.removeItem('password').then(pass=>{
+        dispatch({type:"LOGOUT"})
+    })
+  })
+}
   useEffect(() => {
   //  console.log("trips screen")
   console.log("begin new trip")
    console.log(currentTrip)
   }, [currentTrip]);
   return (
+    <>
+    <Ionicons name={'ios-log-out'} style={{zIndex: 100000,marginTop:30,marginLeft:20}} color={'gray'} size={50}
+        onStartShouldSetResponder={() => logout()} />
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Voici la liste de vos différents trips</Text>
       <RNPickerSelect
@@ -35,6 +50,7 @@ const TripScreen = () => {
       </View>
       
     </ScrollView>
+    </>
   );
 };
 const styles = StyleSheet.create({

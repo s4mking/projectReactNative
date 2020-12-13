@@ -4,3 +4,8 @@ export const login = ({email,password,token}) => (
     payload: {email,password,token},
   }
 );
+
+
+export const logout = () => ({
+  type: 'LOGOUT',
+});

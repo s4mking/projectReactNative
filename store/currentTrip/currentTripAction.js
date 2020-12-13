@@ -3,6 +3,11 @@ export const setNewCurrentTrip = ({trip}) => ({
   payload:{trip}
 });
 
+export const setExistedTrip = ({trip,step}) => ({
+  type: 'CURRENT',
+  payload:{trip,step}
+});
+
 export const nextLoc = () => ({
   type: 'NEXT_LOC',
 });

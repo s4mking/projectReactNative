@@ -4,10 +4,14 @@ import { AsyncStorage, View,Text,TextInput,Button,StyleSheet } from 'react-nativ
 import { ScrollView } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 import RNPickerSelect from 'react-native-picker-select';
-import { useDispatch } from 'react-redux'
+import { useDispatch } from 'react-redux';
+import { Ionicons } from '@expo/vector-icons';
 import LoadScreen from './LoadScreen';
+import { api, loadAuthorisationHeader } from "../helpers/axios";
+
 
 const AddScreen = () => {
+  const dispatch = useDispatch()
   const [loading, setLoading] = useState(false);
   const myTrips = useSelector(state => state.trips.trips)
   const auth = useSelector(state => state.auth)
@@ -15,6 +19,7 @@ const AddScreen = () => {
   const [dataTrip, setDataTrip] = useState(false);
 
   const [latitude, setLatitude] = useState(null);
+  const [idTrip, setIdTrip] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [title, setTitle] = useState(null);
   const [description, setDescription] = useState(null);
@@ -22,8 +27,37 @@ const AddScreen = () => {
   const [titleTrip, setTitleTrip] = useState(null);
   const [descriptionTrip, setDescriptionTrip] = useState(null);
 
+  const logout = () => {
+    AsyncStorage.removeItem('email').then(email=>{
+      AsyncStorage.removeItem('password').then(pass=>{
+        dispatch({type:"LOGOUT"})
+    })
+  })
+}
 
+  const addloc = (idTrip,latitude,longitude,title,description) => {
+    console.log(latitude)
+    console.log(longitude)
 
+    console.log(idTrip)
+
+    console.log(title)
+    console.log(description)
+
+    api
+      .post("/api/locations", {
+        "latitude":parseInt(latitude),
+        "longitude": parseInt(longitude),
+        "description":description,
+        "title": title,
+        "trip":`/api/trips/${idTrip}`,
+      }).then(res => {
+        console.log("try create loc")
+        console.log(res.data)
+      }).catch(err => {
+        console.log(err)
+      })
+  };
 
   useEffect(() => {
     setLoading(true)
@@ -46,29 +80,48 @@ const AddScreen = () => {
     {loading ?
     <LoadScreen />
     :
+    <>
+    <Ionicons name={'ios-log-out'} style={{zIndex: 100000,marginTop:30,marginLeft:20}} color={'gray'} size={50}
+        onStartShouldSetResponder={() => logout()} />
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>Voici la liste de vos différents trips</Text>
-      {dataTrip ? 
-      <RNPickerSelect
-            onValueChange={(value) => console.log(value)}
-            items={dataTrip}
-        /> : null }
-        <TextInput 
-   style={styles.textInput}
-   keyboardType='numeric'
-   onChangeText={(text)=> this.onChanged(text)}
-   value={this.state.myNumber}
-   maxLength={10}  //setting limit of input
-/>
       <View>
-        <Text>
+        <Text style={styles.title}>
           Add location to one of your trip
         </Text>
+        {dataTrip ? 
+      <RNPickerSelect
+            onValueChange={(value) => setIdTrip(value)}
+            items={dataTrip}
+        /> : null }
+        <TextInput
+        keyboardType='numeric'
+        placeholder="latitude"
+        value={latitude}
+        onChangeText={setLatitude}
+      />
+      <TextInput
+        keyboardType='numeric'
+        placeholder="longitude"
+        value={longitude}
+        onChangeText={setLongitude}
+      />
+      <TextInput
+        placeholder="title"
+        value={title}
+        onChangeText={setTitle}
+      />
+      <TextInput
+        placeholder="description"
+        value={description}
+        onChangeText={setDescription}
+      />
+      <Button title="Sign in" onPress={() => addloc(idTrip,latitude,longitude,title,description) } />
+
+
       </View>
 
-     
-      
-    </ScrollView>}
+    </ScrollView>
+    </>}
     </>
   );
 };

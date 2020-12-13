@@ -16,7 +16,10 @@ const authReducer = (state = INITIAL_STATE, action) => {
       };
     case 'LOGOUT':
       return {
-        INITIAL_STATE
+        ...state,
+        email:INITIAL_STATE.email,
+        password:INITIAL_STATE.password,
+        token:INITIAL_STATE.token
       };
     default:
       return state

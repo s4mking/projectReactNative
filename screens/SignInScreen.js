@@ -15,6 +15,7 @@ const SignInScreen = (props) => {
   const login = (email,password) => {
     console.log(email)
     console.log(password)
+    dispatch({type:"LOADING"})
     api
           .post("/login", {
             email:email,
@@ -27,8 +28,22 @@ const SignInScreen = (props) => {
               dispatch({type:"LOGIN",payload:{email:email,password:password,token:res.data.token}})
               AsyncStorage.setItem("password",password)
               AsyncStorage.setItem("email",email)
+              api
+              .get(`/api/user/me`, loadAuthorisationHeader(res.data.token))
+              .then(res => {
+                // console.log(res.data)
+                
+                let trips = res.data.trips
+                console.log("work here")
+                console.log(trips)
+                dispatch({type:"SET_USER",payload:{trips}})
+                dispatch({type:"END_LOADING"})
+                })
+              .catch(err => console.log(err));
+            
           }
         }).catch(err =>{
+          dispatch({type:"END_LOADING"})
           console.log("kkk")
           console.log(err)
         })

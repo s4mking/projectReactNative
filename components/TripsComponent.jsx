@@ -12,6 +12,11 @@ const TripsComponent = ({trip}) => {
   const dispatch = useDispatch()
   const [showDetails, setShowDetails] = useState(false)
   const setTripCurrent = (trip) => {
+    objtosave= JSON.stringify(trip.step[0])
+    AsyncStorage.setItem('currentStep',"0")
+    AsyncStorage.setItem('currentIndex',trip.id.toString())
+    console.log("kkkkkk")
+    console.log(trip.id)
     dispatch({type:"NEW_CURRENT",payload:{trip:trip}})
   }
 

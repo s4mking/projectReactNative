@@ -7,22 +7,29 @@ import MapView, {
     PROVIDER_GOOGLE
   } from 'react-native-maps';
   import haversine from "haversine";
+  import { useDispatch } from 'react-redux'
+
   import { connect } from 'react-redux';
 
 const LATITUDE_DELTA = 0.009;
 const LONGITUDE_DELTA = 0.009;
 
 const Direction = ({navigation}) => {
+  
+  const dispatch = useDispatch()
   const currentTrip = useSelector(state => state.currentTrip)
   const currentLoad = useSelector(state => state.loading)
-  console.log(currentLoad);
-  console.log(navigation);
-  console.log("currentload");
+  console.log("current trip is here")
+  console.log(currentTrip)
 
   const logout = () => {
+    dispatch({type:"LOADING"})
     AsyncStorage.removeItem('email').then(email=>{
       AsyncStorage.removeItem('password').then(pass=>{
-      navigation.navigate('Home')
+        // dispatch({type:"LOADING"})
+        dispatch({type:"LOGOUT"})
+        dispatch({type:"END_LOADING"})
+        console.log("hi")
     })
   })
 }
@@ -55,10 +62,7 @@ const Direction = ({navigation}) => {
     },[currentTrip])
     useEffect(()=>{
       console.log("right here")
-<<<<<<< HEAD
       console.log(currentTrip)
-=======
->>>>>>> 4a82fbb81135c219924dfb872463124630660e0f
       //watcher to geoloc
       watchID = navigator.geolocation.watchPosition(
           position => {
@@ -168,9 +172,6 @@ const Direction = ({navigation}) => {
   
       return (
         <>
-        <View>
-          
-        </View>
         <Ionicons name={'ios-log-out'} style={{zIndex: 100000,marginTop:30,marginLeft:20}} color={'gray'} size={50}
         onStartShouldSetResponder={() => logout()} />
         <View style={styles.container}>

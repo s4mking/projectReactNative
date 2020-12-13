@@ -22,8 +22,11 @@ export default function App({ navigation }) {
   const loading = useSelector(state => state.loading)
   const dispatch = useDispatch()
   useEffect(() => {
+    console.log("hi")
     // Fetch the token from storage then navigate to our appropriate place
-    dispatch({type:"LOADING"})
+    if(loading.status!=true){
+      dispatch({type:"LOADING"})
+    }
     AsyncStorage.getItem('email').then(email => {
       AsyncStorage.getItem('password').then(password => {
         if(email !== null && password!==null){
@@ -34,7 +37,7 @@ export default function App({ navigation }) {
           })
           .then(res => {
             console.log("this is the res")
-            console.log(res.data.token);
+            const token =res.data.token;
             if (res.data.token != undefined) {
               dispatch({type:"LOGIN",payload:{email:email,password:password,token:res.data.token}})
               api
@@ -44,11 +47,31 @@ export default function App({ navigation }) {
                 
                 let trips = res.data.trips
                 console.log("work here")
-                console.log(trips)
+                // console.log(trips)
                 dispatch({type:"SET_USER",payload:{trips}})
-                setTimeout(() => {
-                dispatch({type:"END_LOADING"})
-                }, 100);
+                AsyncStorage.getItem('currentStep').then(step => {
+                  AsyncStorage.getItem('currentIndex').then(index => {
+                  console.log(index)
+                  console.log(step)
+                  if(index!==null && step!== null){
+                    api
+                    .get(`/api/trips/${index}`, loadAuthorisationHeader(token))
+                    .then(res => {
+                      console.log(res.data)
+                      dispatch({type:"CURRENT",payload:{trip:res.data,step:step}})
+                      dispatch({type:"END_LOADING"})
+                    })
+                    .catch(err => console.log(err));
+                    // console.log("JSON.parse(dest)")
+                    // console.log(JSON.parse(dest))
+                    // dispatch({type:"NEW_CURRENT",payload:{trip:dest}})
+                    // dispatch({type:"END_LOADING"})
+                  }else{
+                    dispatch({type:"END_LOADING"})
+                  }
+                })
+              })
+                
                 })
               .catch(err => console.log(err));
             }
@@ -65,9 +88,9 @@ export default function App({ navigation }) {
       })
     }, []);
 
-  useEffect(() => {
-    console.log(loading)
-  },[loading])
+  // useEffect(() => {
+  //   console.log(auth)
+  // },[auth])
   
   return (
     <>
