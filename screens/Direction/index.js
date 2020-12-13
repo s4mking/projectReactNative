@@ -19,8 +19,8 @@ const Direction = ({navigation}) => {
   const dispatch = useDispatch()
   const currentTrip = useSelector(state => state.currentTrip)
   const currentLoad = useSelector(state => state.loading)
-  console.log("current trip is here")
-  console.log(currentTrip)
+  // console.log("current trip is here")
+
 
   const logout = () => {
     dispatch({type:"LOADING"})
@@ -53,16 +53,17 @@ const Direction = ({navigation}) => {
     const [cordLongitude,setCordLongitude]= useState(2.435575);
     const [x,setX]= useState(false);
     const [marker,setMarker]= useState();
+    const [currentStepIterator,setStepIterator]= useState(0);
+    const [currentStep,setStep]= useState({});
     const [target,setTarget]= useState(0);
     const [error,setError]= useState(null);
     const [concat,setConcat]= useState(null);
     useEffect(()=>{
-      console.log("current trip has changed")
-      console.log(currentTrip)
-    },[currentTrip])
-    useEffect(()=>{
-      console.log("right here")
-      console.log(currentTrip)
+      console.log(currentTrip.trip.step[currentStep]);
+      setStep(currentTrip.trip.step[currentStepIterator])
+       console.log("right here")
+       console.log(currentStep.longitude)
+      // console.log(currentTrip.step)
       //watcher to geoloc
       watchID = navigator.geolocation.watchPosition(
           position => {
@@ -123,21 +124,33 @@ const Direction = ({navigation}) => {
     console.log("distance entre")
     if(distanceBetween == 332){
       Alert.alert(
-        'Vous êtes arrivés'
+        currentStep.description
+    )
+    setStepIterator(currentStepIterator+1)
+    if(currentStepIterator == currentTrip.trip.step.length){
+      Alert.alert(
+        'Le parcours est maintenant fini ^^'
     )
     }
+
+}
   };
 
   //Caculate distance between 2 points have to implement myself
   const calcCrow = (e)=>{
-    if ((latitude == markers[0].latitude) && (longitude == markers[0].longitude)) {
+    console.log(currentStep)
+    console.log("samyfazifgsuazfjge")
+    console.log(currentTrip.trip.step[currentStepIterator])
+    console.log("saq")
+
+    if ((latitude == currentStep.latitude) && (longitude == currentStep.longitude)) {
       return 0;
     }
     else {
       var unit = 'K'
       var radlat1 = Math.PI * latitude/180;
-      var radlat2 = Math.PI * markers[0].latitude/180;
-      var theta = longitude-markers[0].longitude;
+      var radlat2 = Math.PI * currentStep.latitude/180;
+      var theta = longitude-currentStep.longitude;
       var radtheta = Math.PI * theta/180;
       var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
       if (dist > 1) {
@@ -185,7 +198,7 @@ const Direction = ({navigation}) => {
       >
 <MapViewDirections
     origin={{"latitude":latitude,"longitude":longitude}}
-    destination={{"latitude":markers[0].latitude,"longitude":markers[0].longitude}}
+    destination={{"latitude":currentStep.latitude,"longitude":currentStep.longitude}}
     apikey="AIzaSyBBb9bOEPqf7g1NSx-TwAoAy-WdoiY4MvY" strokeColor="lightblue" strokeWidth={4}
   />
       {!!latitude && !!longitude && <MapView.Marker
@@ -194,7 +207,7 @@ const Direction = ({navigation}) => {
        />}
 
        {!!cordLatitude && !!cordLongitude && <MapView.Marker
-          coordinate={{"latitude":markers[0].latitude,"longitude":markers[0].longitude}}
+          coordinate={{"latitude":currentStep.latitude,"longitude":currentStep.longitude}}
           title={"Your Destination"}
         />}
       </MapView>
