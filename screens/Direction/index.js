@@ -4,7 +4,6 @@ import MapViewDirections from 'react-native-maps-directions';
 import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, Text,View, TouchableOpacity,Alert,AsyncStorage } from "react-native";
 import MapView, {
-    Polyline,
     PROVIDER_GOOGLE
   } from 'react-native-maps';
   import haversine from "haversine";
@@ -56,12 +55,15 @@ const Direction = ({navigation}) => {
     },[currentTrip])
     useEffect(()=>{
       console.log("right here")
+<<<<<<< HEAD
       console.log(currentTrip)
+=======
+>>>>>>> 4a82fbb81135c219924dfb872463124630660e0f
       //watcher to geoloc
       watchID = navigator.geolocation.watchPosition(
           position => {
             const { latitude, longitude } = position.coords;
-         
+
             const newCoordinate = {
               latitude,
               longitude
@@ -81,7 +83,7 @@ const Direction = ({navigation}) => {
             } else {
               coordinate.timing(newCoordinate).start();
             }
-    
+              // console.log(latitude)
               setLatitude(latitude)
               setLongitude(longitude)
               setRouteCoordinates(routeCoordinates.concat([newCoordinate]))
@@ -100,6 +102,7 @@ const Direction = ({navigation}) => {
         );
       navigator.geolocation.getCurrentPosition(
          (position) => {
+          // console.log(position)
             setLatitude(position.coords.latitude);
              setLongitude(position.coords.longitude);
              setError(null);
@@ -121,7 +124,7 @@ const Direction = ({navigation}) => {
     }
   };
 
-  //Caculate distance
+  //Caculate distance between 2 points have to implement myself
   const calcCrow = (e)=>{
     if ((latitude == markers[0].latitude) && (longitude == markers[0].longitude)) {
       return 0;
@@ -140,7 +143,6 @@ const Direction = ({navigation}) => {
       dist = dist * 180/Math.PI;
       dist = dist * 60 * 1.1515;
       if (unit=="K") { dist = dist * 1.609344 }
-      console.log(dist.toFixed(2));
       if(dist.toFixed(2) < 0.10){
         Alert.alert(
           'Vous êtes arrivés'
@@ -150,46 +152,11 @@ const Direction = ({navigation}) => {
     }
   };
 
-// //Harversine
-const mergeLot = (e)=>{
-    if (latitude != null && longitude!=null)  
-     {
-       let concatLot = latitude +","+longitude
-      
-         setConcat(concatLot)
-         //normalement  'est async la
-         getDirections(concatLot, markers[0].latitude+","+markers[0].longitude);
-     
-     }
-   }
-
    const calcDistance = newLatLng => {
     return haversine(prevLatLng, newLatLng) || 0;
   };
 
-  //Get direction between 2 pins
-  
-  const getDirections = async (startLoc, destinationLoc) => {
-         try {
-             let resp = await fetch(`https://maps.googleapis.com/maps/api/directions/json?origin=${ startLoc }&destination=${ destinationLoc }`)
-             let respJson = await resp.json();
-             let points = Polyline.decode(respJson.routes[0].overview_polyline.points);
-             let coords = points.map((point, index) => {
-                 return  {
-                     latitude : point[0],
-                     longitude : point[1]
-                 }
-             })
-             setCoords(coords)
-             setX("true")
-             console.log(coords)
-             return coords
-         } catch(error) {
-           console.log('passe')
-             setX("error")
-             return error
-         }
-     }
+
 
      //Map region with autoupdate 
      const getMapRegion = (e) => ({
@@ -218,7 +185,7 @@ const mergeLot = (e)=>{
 <MapViewDirections
     origin={{"latitude":latitude,"longitude":longitude}}
     destination={{"latitude":markers[0].latitude,"longitude":markers[0].longitude}}
-    apikey="AIzaSyBBb9bOEPqf7g1NSx-TwAoAy-WdoiY4MvY"
+    apikey="AIzaSyBBb9bOEPqf7g1NSx-TwAoAy-WdoiY4MvY" strokeColor="lightblue" strokeWidth={4}
   />
       {!!latitude && !!longitude && <MapView.Marker
          coordinate={{"latitude":latitude,"longitude":longitude}}
@@ -231,12 +198,12 @@ const mergeLot = (e)=>{
         />}
       </MapView>
       <View style={styles.buttonContainer}>
-          <TouchableOpacity style={[styles.bubble, styles.button]}>
-            <Text style={styles.bottomBarContent}>
+          <TouchableOpacity  style={[styles.bubble, styles.button,styles.opacityContainer]}>
+            {/* <Text style={styles.bottomBarContent}>
               Parcouru {parseFloat(distanceTravelled).toFixed(2)} km
-            </Text>
+            </Text> */}
             <Text style={styles.bottomBarContent}>
-              Il reste {distanceBetween} km
+              Vous êtes à {distanceBetween} km de la cible
             </Text>
           </TouchableOpacity>
         </View>
@@ -282,7 +249,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginVertical: 20,
     backgroundColor: "transparent"
+  },
+  bottomBarContent:{
+    color:"red"
+  },
+  opacityContainer: {
+    backgroundColor: "#61dafb"
   }
+
 });
 
 export default Direction;
