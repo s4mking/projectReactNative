@@ -1,6 +1,6 @@
 
 const INITIAL_STATE = {
-  status:false
+  status:false,
 }
 
 const loadingReducer = (state = INITIAL_STATE, action) => {
@@ -13,7 +13,7 @@ const loadingReducer = (state = INITIAL_STATE, action) => {
     case 'END_LOADING':
       return {
         ...state,
-        status:false
+        status:false,
       };
     default:
       return state

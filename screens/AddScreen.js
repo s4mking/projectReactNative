@@ -1,44 +1,98 @@
-import React from 'react';
-import { StyleSheet,View,Text } from 'react-native';
-import AnimatedLoader from "react-native-animated-loader";
-import Icon from 'react-native-vector-icons/FontAwesome';
+
+import React, { PureComponent, useEffect,useState } from 'react';
+import { AsyncStorage, View,Text,TextInput,Button,StyleSheet } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
+import { useSelector } from 'react-redux';
+import RNPickerSelect from 'react-native-picker-select';
+import { useDispatch } from 'react-redux'
+import LoadScreen from './LoadScreen';
+
+const AddScreen = () => {
+  const [loading, setLoading] = useState(false);
+  const myTrips = useSelector(state => state.trips.trips)
+  const auth = useSelector(state => state.auth)
+  const currentTrip = useSelector(state => state.currentTrip)
+  const [dataTrip, setDataTrip] = useState(false);
+
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
+  const [title, setTitle] = useState(null);
+  const [description, setDescription] = useState(null);
+
+  const [titleTrip, setTitleTrip] = useState(null);
+  const [descriptionTrip, setDescriptionTrip] = useState(null);
 
 
-export default class LoadScreen extends React.Component {
-  render() {
-    return (
-      // <View>
-      //   <Text>
-      //     lll;l;l
-      //   </Text>
-      // </View>
+
+
+  useEffect(() => {
+    setLoading(true)
+
+    setTimeout(() => {
+      setLoading(false)
+      }, 5000);
+  //  console.log("trips screen")
+    let data = []
+  console.log("begin new trip")
+  for (const property in myTrips) {
+    let title = myTrips[property].title
+    let id = myTrips[property].id
+    data.push({label:title,value:id})
+  }
+  setDataTrip(data)
+  }, []);
+  return (
+    <>
+    {loading ?
+    <LoadScreen />
+    :
+    <ScrollView style={styles.container}>
+      <Text style={styles.title}>Voici la liste de vos différents trips</Text>
+      {dataTrip ? 
+      <RNPickerSelect
+            onValueChange={(value) => console.log(value)}
+            items={dataTrip}
+        /> : null }
+        <TextInput 
+   style={styles.textInput}
+   keyboardType='numeric'
+   onChangeText={(text)=> this.onChanged(text)}
+   value={this.state.myNumber}
+   maxLength={10}  //setting limit of input
+/>
       <View>
-      <AnimatedLoader
-        visible={true}
-        overlayColor="rgba(255,255,255,0.75)"
-        source={require("./pin2.json")}
-        animationStyle={styles.lottie}
-        speed={1}
-      />
-       <Icon.Button name="facebook" backgroundColor="#3b5998">
-    <Text style={{ fontSize: 15 }}>
-      Login with Facebook
-    </Text>
-  </Icon.Button>
+        <Text>
+          Add location to one of your trip
+        </Text>
       </View>
+
      
-    );
-  }
-}
-
+      
+    </ScrollView>}
+    </>
+  );
+};
 const styles = StyleSheet.create({
-  lottie: {
-    width: 200,
-    height: 200
+  container: {
+    flex: 1,
+    padding: 24,
+    backgroundColor: "#f2f2f2",
+  },
+  title: {
+    marginTop: 16,
+    marginBottom: 15,
+    paddingVertical: 8,
+    borderWidth: 4,
+    borderColor: "#20232a",
+    borderRadius: 6,
+    backgroundColor: "#61dafb",
+    color: "#20232a",
+    textAlign: "center",
+    fontSize: 30,
+    fontWeight: "bold"
+  },
+  trips:{
+    marginBottom:45
   }
-});
-
-
-useEffect(() => {
-  console.log(loading)
-},[loading])
+})
+export default AddScreen;

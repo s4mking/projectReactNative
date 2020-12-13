@@ -4,5 +4,5 @@ export const loading = () => ({
 
 
 export const endLoading = () => ({
-  type: 'END_LOADING',
+  type: 'END_LOADING'
 });

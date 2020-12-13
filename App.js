@@ -8,7 +8,7 @@ import LoadScreen from './screens/LoadScreen';
 import HomeScreen from './screens/HomeScreen';
 import TripScreen from './screens/TripScreen'
 import Direction from './screens/Direction';
-
+import AddScreen from './screens/AddScreen';
 import AuthContext from './AuthContext';
 import { Ionicons } from '@expo/vector-icons';
 import { api, loadAuthorisationHeader } from "./helpers/axios";
@@ -20,7 +20,6 @@ import { useSelector } from 'react-redux'
 export default function App({ navigation }) {
   const auth = useSelector(state => state.auth)
   const loading = useSelector(state => state.loading)
-  
   const dispatch = useDispatch()
   useEffect(() => {
     // Fetch the token from storage then navigate to our appropriate place
@@ -41,14 +40,14 @@ export default function App({ navigation }) {
               api
               .get(`/api/user/me`, loadAuthorisationHeader(res.data.token))
               .then(res => {
-                console.log(res.data)
+                // console.log(res.data)
+                
                 let trips = res.data.trips
                 console.log("work here")
                 console.log(trips)
                 dispatch({type:"SET_USER",payload:{trips}})
                 setTimeout(() => {
                 dispatch({type:"END_LOADING"})
-
                 }, 100);
                 })
               .catch(err => console.log(err));
@@ -57,6 +56,8 @@ export default function App({ navigation }) {
           .catch(err =>{
           console.log(err)
           })
+        }else{
+          dispatch({type:"END_LOADING"})
         }
       })
     }).catch(err =>{
@@ -75,13 +76,23 @@ export default function App({ navigation }) {
     : auth.token == null ? 
       (<SignInScreen/>):
       (
+        
           <NavigationContainer>
-            <View style={styles.logout}>
+
+            {/* {route.name == "Home" ? null :<View style={styles.logout}>
               <Ionicons name={'ios-log-out'} style={{zIndex: 100000,marginTop:30,marginLeft:20}} color={'gray'} size={50} />
-            </View>
+            </View>} */}
+            
           <Tab.Navigator
           
             screenOptions={({ route }) => ({
+              headerStyle: {
+                backgroundColor: '#f4511e',
+              },
+              headerTintColor: '#fff',
+              headerTitleStyle: {
+                fontWeight: 'bold',
+              },
               tabBarIcon: ({ focused, color, size }) => {
                 let iconName;
     
@@ -105,7 +116,7 @@ export default function App({ navigation }) {
           >
             <Tab.Screen name="Home" component={Direction} />
             <Tab.Screen name="Trip" component={TripScreen} />
-            <Tab.Screen name="Add" component={Direction} />
+            <Tab.Screen name="Add" component={AddScreen} />
           </Tab.Navigator>
         </NavigationContainer>
         )
@@ -113,7 +124,6 @@ export default function App({ navigation }) {
       </>
   );
 };
-
 
 
 const styles = StyleSheet.create({

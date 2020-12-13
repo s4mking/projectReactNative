@@ -14,12 +14,10 @@ const LocationComponent = ({location,index}) => {
   return (
     <View style={styles.location}>
        <Text style={styles.centeredText}>
-         Destination n°{index} : {location.title}
+         Destination n°{index} : {location.title} {"\n"}
          Description : {location.description}
-        
       </Text>
     </View>
-     
   );
 };
 

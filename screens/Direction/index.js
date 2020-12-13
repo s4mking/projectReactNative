@@ -1,6 +1,8 @@
 import React, { Component,useState,useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import MapViewDirections from 'react-native-maps-directions';
-import { StyleSheet, Text,View, TouchableOpacity,Alert } from "react-native";
+import { Ionicons } from '@expo/vector-icons';
+import { StyleSheet, Text,View, TouchableOpacity,Alert,AsyncStorage } from "react-native";
 import MapView, {
     Polyline,
     PROVIDER_GOOGLE
@@ -11,7 +13,21 @@ import MapView, {
 const LATITUDE_DELTA = 0.009;
 const LONGITUDE_DELTA = 0.009;
 
-function Direction(props) {
+const Direction = ({navigation}) => {
+  const currentTrip = useSelector(state => state.currentTrip)
+  const currentLoad = useSelector(state => state.loading)
+  console.log(currentLoad);
+  console.log(navigation);
+  console.log("currentload");
+
+  const logout = () => {
+    AsyncStorage.removeItem('email').then(email=>{
+      AsyncStorage.removeItem('password').then(pass=>{
+      navigation.navigate('Home')
+    })
+  })
+}
+
   
     const [markers,setMarkers]= useState([
       {
@@ -34,10 +50,13 @@ function Direction(props) {
     const [target,setTarget]= useState(0);
     const [error,setError]= useState(null);
     const [concat,setConcat]= useState(null);
-
+    useEffect(()=>{
+      console.log("current trip has changed")
+      console.log(currentTrip)
+    },[currentTrip])
     useEffect(()=>{
       console.log("right here")
-      console.log(props.trips)
+      console.log(currentTrip)
       //watcher to geoloc
       watchID = navigator.geolocation.watchPosition(
           position => {
@@ -181,6 +200,12 @@ const mergeLot = (e)=>{
       });
   
       return (
+        <>
+        <View>
+          
+        </View>
+        <Ionicons name={'ios-log-out'} style={{zIndex: 100000,marginTop:30,marginLeft:20}} color={'gray'} size={50}
+        onStartShouldSetResponder={() => logout()} />
         <View style={styles.container}>
         <MapView
         style={styles.map}
@@ -216,6 +241,7 @@ const mergeLot = (e)=>{
           </TouchableOpacity>
         </View>
     </View>
+    </>
     );
   }
 
@@ -259,8 +285,4 @@ const styles = StyleSheet.create({
   }
 });
 
-const mapStateToProps = state => {
-  return { trips: state.trips };
-};
-
-export default connect(mapStateToProps)(Direction);
+export default Direction;

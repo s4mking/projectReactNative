@@ -12,11 +12,9 @@ const TripsComponent = ({trip}) => {
   const dispatch = useDispatch()
   const [showDetails, setShowDetails] = useState(false)
   const setTripCurrent = (trip) => {
-    console.log(trip)
-  }
-  useEffect(() => {
     dispatch({type:"NEW_CURRENT",payload:{trip:trip}})
-  }, []);
+  }
+
   return (
     <View style={styles.trip}>
       <Button
