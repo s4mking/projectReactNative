@@ -87,8 +87,8 @@ const AddScreen = () => {
 
     api
       .post("/api/locations", {
-        "latitude":parseInt(latitude),
-        "longitude": parseInt(longitude),
+        "latitude":parseFloat(latitude),
+        "longitude": parseFloat(longitude),
         "description":description,
         "title": title,
         "trip":`/api/trips/${idTrip}`,
