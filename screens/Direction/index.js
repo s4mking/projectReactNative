@@ -30,22 +30,22 @@ const Direction = ({navigation}) => {
     const [latitude,setLatitude]= useState(49.171320);
     const [longitude,setLongitude]= useState(2.419825);
     const [distanceTravelled,setDistanceTravelled]= useState(0);
-    const [distanceBetween,setDistanceBetween]= useState(0);
+    const [distanceBetween,setDistanceBetween]= useState(10);
     const [prevLatLng,setPrevLatLng]= useState({});
     const [x,setX]= useState(false);
     const [marker,setMarker]= useState();
     const [currentStepIterator,setStepIterator]= useState(0);
+    const [currentStepParser,setStepParser]= useState(0);
     const [currentStep,setStep]= useState({});
     const [target,setTarget]= useState(0);
     const [error,setError]= useState(null);
-    const [nameThis,setNameThis]= useState(true);
     const [modalVisible, setModalVisible] = useState(false);
 
     useEffect(()=>{
-    },[currentTrip.trip.step[currentStepIterator]])
+    },[currentTrip.trip.step[currentStepParser]])
     useEffect(()=>{
-      // ne marche pas plus propre que de passer à chaque fois le tableau en entier
-      setStep(currentTrip.trip.step[currentStepIterator])
+      // ne marche pas normalement plus propre que de passer à chaque fois le tableau en entier
+      setStep(currentTrip.trip.step[currentStepParser])
       
       //watcher to geoloc la position de l'utilisateur
       navigator.geolocation.watchPosition(
@@ -55,10 +55,9 @@ const Direction = ({navigation}) => {
               latitude,
               longitude
             };
-    
             if (Platform.OS === "android") {
               if (marker) {
-                  marker._component.animateMarkerToCoordinate(
+                  marker.animateMarkerToCoordinate(
                     newCoordinate,
                        500
                   );
@@ -69,8 +68,6 @@ const Direction = ({navigation}) => {
             //quand l'utilisateur a bougé on recalcule totues les distances
               setLatitude(latitude)
               setLongitude(longitude)
-              setDistanceBetween(calcCrow())
-              setTarget(detectDestination())
               setDistanceTravelled(distanceTravelled + calcDistance(newCoordinate))
               setPrevLatLng(newCoordinate)
           },
@@ -82,44 +79,49 @@ const Direction = ({navigation}) => {
             distanceFilter: 10
           }
         );
+
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+             setLatitude(position.coords.latitude);
+             setLongitude(position.coords.longitude);
+             setError(null);
+             mergeLot();
+          },
+          (error) => setError(error.message),
+          { enableHighAccuracy: false, timeout: 200000, maximumAge: 1000 },
+        );
     },[])
 
   //detecte si on arrive proche de la cible si oui on affiche la modal avec les infos et on itere notre index de 1
-  const detectDestination = (e)=>{
-    if(distanceBetween == 332){
-      setModalVisible(true);
-    setStepIterator(currentStepIterator+1)
+  useEffect(()=>{
+    const detectDestination = (e)=>{
+    console.log("distance between")
+    console.log(distanceBetween*1000)
+    if((distanceBetween*1000) < 200){
+      setModalVisible(true)
+      setStepIterator(currentStepIterator+1)
+      console.log(currentStepIterator)
+      console.log(currentTrip.trip.step.length-1)
     if(currentStepIterator == (currentTrip.trip.step.length-1)){
         Alert.alert(
           'Le parcours est maintenant fini ^^'
       )
+      setStepIterator(0)
+      
     }
+    console.log(currentStepParser)
+    if(typeof currentTrip.trip.step[currentStepParser+1] === 'undefined') {
+      setStepParser(0)
+  }else{
+    setStepParser(currentStepParser+1)
+  }
+    
 }
   };
+  setTarget(detectDestination())
+  },[distanceBetween])
 
-  //Caculate distance between 2 points have to implement myself
-  const calcCrow = (e)=>{
-    if ((latitude == currentTrip.trip.step[currentStepIterator].latitude) && (longitude == currentTrip.trip.step[currentStepIterator].longitude)) {
-      return 0;
-    }
-    else {
-      var unit = 'K'
-      var radlat1 = Math.PI * latitude/180;
-      var radlat2 = Math.PI * currentTrip.trip.step[currentStepIterator].latitude/180;
-      var theta = longitude-currentTrip.trip.step[currentStepIterator].longitude;
-      var radtheta = Math.PI * theta/180;
-      var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
-      if (dist > 1) {
-        dist = 1;
-      }
-      dist = Math.acos(dist);
-      dist = dist * 180/Math.PI;
-      dist = dist * 60 * 1.1515;
-      if (unit=="K") { dist = dist * 1.609344 }
-      return dist.toFixed(2);
-    }
-  };
-
+     
    const calcDistance = newLatLng => {
     return haversine(prevLatLng, newLatLng) || 0;
   };
@@ -133,7 +135,7 @@ const Direction = ({navigation}) => {
   
       return (
         <>
-        {nameThis ? (<><Ionicons name={'ios-log-out'} style={{zIndex: 100000,marginTop:30,marginLeft:20}} color={'gray'} size={50}
+        <><Ionicons name={'ios-log-out'} style={{zIndex: 100000,marginTop:30,marginLeft:20}} color={'gray'} size={50}
         onStartShouldSetResponder={() => logout()} />
         <View style={styles.container}>
         <Modal
@@ -143,7 +145,7 @@ const Direction = ({navigation}) => {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>{currentTrip.trip.step[currentStepIterator].description}</Text>
+            <Text style={styles.modalText}>{currentTrip.trip.step[currentStepParser].description}</Text>
 
             <TouchableHighlight
               style={{ ...styles.openButton, backgroundColor: "#2196F3" }}
@@ -168,31 +170,34 @@ const Direction = ({navigation}) => {
     origin={{"latitude":latitude,"longitude":longitude}}
     mode="WALKING"
     language='fr'
-    destination={{"latitude":currentTrip.trip.step[currentStepIterator].latitude,"longitude":currentTrip.trip.step[currentStepIterator].longitude}}
+    destination={{"latitude":currentTrip.trip.step[currentStepParser].latitude,"longitude":currentTrip.trip.step[currentStepParser].longitude}}
     apikey="AIzaSyBBb9bOEPqf7g1NSx-TwAoAy-WdoiY4MvY" strokeColor="lightblue" strokeWidth={4}
+    onReady={result => {
+      setDistanceBetween(result.distance)
+      console.log(`Distance: ${result.distance} km`)
+    }}
   />
       {!!latitude && !!longitude && <MapView.Marker
          coordinate={{"latitude":latitude,"longitude":longitude}}
          title={"Your Location"}
        />}
 
-       {!!currentTrip.trip.step[currentStepIterator].latitude && !!currentTrip.trip.step[currentStepIterator].longitude && <MapView.Marker
-          coordinate={{"latitude":currentTrip.trip.step[currentStepIterator].latitude,"longitude":currentTrip.trip.step[currentStepIterator].longitude}}
+       {!!currentTrip.trip.step[currentStepParser].latitude && !!currentTrip.trip.step[currentStepParser].longitude && <MapView.Marker
+          coordinate={{"latitude":currentTrip.trip.step[currentStepParser].latitude,"longitude":currentTrip.trip.step[currentStepParser].longitude}}
           title={"Your Destination"}
         />}
       </MapView>
       <View style={styles.buttonContainer}>
           <TouchableOpacity  style={[styles.bubble, styles.button,styles.opacityContainer]}>
             <Text style={styles.bottomBarContent}>
-              Etape {(currentStepIterator + 1)} / {(currentTrip.trip.step.length)}
+              Etape {(currentStepParser + 1)} / {(currentTrip.trip.step.length)}
             </Text>
             <Text style={styles.bottomBarContent}>
-              Vous êtes à {distanceBetween} km de la cible
+              Vous êtes à {(distanceBetween.toFixed(2))} km de la cible
             </Text>
           </TouchableOpacity>
         </View>
-    </View></>):<Text> "faudrait un loader"</Text> }
-        
+    </View></>
     </>
     );
   }
