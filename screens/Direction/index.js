@@ -82,18 +82,6 @@ const Direction = ({navigation}) => {
             distanceFilter: 10
           }
         );
-
-        //position actuelle sert 
-      // navigator.geolocation.getCurrentPosition(
-      //    (position) => {
-      //       setLatitude(position.coords.latitude);
-      //       setLongitude(position.coords.longitude);
-      //       setError(null);
-      //       mergeLot();
-      //    },
-      //    (error) => setError(error.message),
-      //    { enableHighAccuracy: false, timeout: 200000, maximumAge: 1000 },
-      //  );
     },[])
 
   //detecte si on arrive proche de la cible si oui on affiche la modal avec les infos et on itere notre index de 1
@@ -102,18 +90,15 @@ const Direction = ({navigation}) => {
       setModalVisible(true);
     setStepIterator(currentStepIterator+1)
     if(currentStepIterator == (currentTrip.trip.step.length-1)){
-      Alert.alert(
-        'Le parcours est maintenant fini ^^'
-    )
+        Alert.alert(
+          'Le parcours est maintenant fini ^^'
+      )
     }
 }
   };
 
   //Caculate distance between 2 points have to implement myself
   const calcCrow = (e)=>{
-    // console.log(currentStep)
-    // console.log("samyfazifgsuazfjge")
-
     if ((latitude == currentTrip.trip.step[currentStepIterator].latitude) && (longitude == currentTrip.trip.step[currentStepIterator].longitude)) {
       return 0;
     }
