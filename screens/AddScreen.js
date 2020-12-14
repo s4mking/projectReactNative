@@ -1,6 +1,6 @@
 
 import React, { PureComponent, useEffect,useState } from 'react';
-import { AsyncStorage, View,Text,TextInput,Button,StyleSheet } from 'react-native';
+import { AsyncStorage, View,Text,TextInput ,style,Button,StyleSheet, Alert } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 import RNPickerSelect from 'react-native-picker-select';
@@ -40,6 +40,9 @@ const AddScreen = () => {
 }
 
   const addTrip = (idType,idNotation,titleTrip,descriptionTrip) => {
+    if(!idType || !idNotation || !titleTrip || !descriptionTrip){
+      Alert.alert("vous n'avez pas bien rempli tout les champs")
+    }
     setLoading(true)
     console.log(idType)
     console.log(idNotation)
@@ -64,6 +67,9 @@ const AddScreen = () => {
   }
 
   const addloc = (idTrip,latitude,longitude,title,description) => {
+    if(!idTrip || !latitude || !longitude || !title || !description){
+      Alert.alert("vous n'avez pas bien rempli tout les champs")
+    }
     setLoading(true)
     console.log(latitude)
     console.log(longitude)
@@ -132,7 +138,7 @@ const AddScreen = () => {
     <Ionicons name={'ios-log-out'} style={{zIndex: 100000,marginTop:30,marginLeft:20}} color={'gray'} size={50}
         onStartShouldSetResponder={() => logout()} />
     <ScrollView style={styles.container}>
-      <View>
+      <View style={styles.add}>
         <Text style={styles.title}>
           Add location to one of your trip
         </Text>
@@ -145,23 +151,35 @@ const AddScreen = () => {
             items={dataTrip}
         /> : null }
         <TextInput
+        underlineColorAndroid = "transparent"
+        placeholderTextColor = "#9a73ef"
+            style={styles.input}
         keyboardType='numeric'
         placeholder="latitude"
         value={latitude}
         onChangeText={setLatitude}
       />
       <TextInput
+      underlineColorAndroid = "transparent"
+      placeholderTextColor = "#9a73ef"
+          style={styles.input}
         keyboardType='numeric'
         placeholder="longitude"
         value={longitude}
         onChangeText={setLongitude}
       />
       <TextInput
+      underlineColorAndroid = "transparent"
+      placeholderTextColor = "#9a73ef"
+          style={styles.input}
         placeholder="title"
         value={title}
         onChangeText={setTitle}
       />
       <TextInput
+      underlineColorAndroid = "transparent"
+      placeholderTextColor = "#9a73ef"
+          style={styles.input}
         placeholder="description"
         value={description}
         onChangeText={setDescription}
@@ -189,11 +207,17 @@ const AddScreen = () => {
         
 
     <TextInput
+    underlineColorAndroid = "transparent"
+    placeholderTextColor = "#9a73ef"
+        style={styles.input}
         placeholder="title"
         value={title}
         onChangeText={setTitleTrip}
       />
       <TextInput
+      underlineColorAndroid = "transparent"
+      placeholderTextColor = "#9a73ef"
+          style={styles.input}
         placeholder="description"
         value={description}
         onChangeText={setDescriptionTrip}
@@ -214,6 +238,10 @@ const styles = StyleSheet.create({
     padding: 24,
     backgroundColor: "#f2f2f2",
   },
+  add:{
+    marginTop:10,
+    marginBottom:90
+  },
   title: {
     marginTop: 16,
     marginBottom: 15,
@@ -227,6 +255,13 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: "bold"
   },
+  input: {
+    padding:5,
+    margin: 15,
+    height: 40,
+    borderColor: '#7a42f4',
+    borderWidth: 1
+ },
   trips:{
     marginBottom:45
   }
