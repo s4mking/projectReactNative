@@ -59,6 +59,8 @@ const Direction = ({navigation}) => {
     const [error,setError]= useState(null);
     const [concat,setConcat]= useState(null);
     useEffect(()=>{
+      console.log("right here")
+      console.log(currentTrip)
       console.log(currentTrip.trip.step[currentStep]);
       setStep(currentTrip.trip.step[currentStepIterator])
        console.log("right here")

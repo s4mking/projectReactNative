@@ -9,7 +9,8 @@ const LoadScreen = () => {
     var req = require(`./pin.json`)
     var req2 = require(`./pin2.json`)
     var req3 = require(`./map.json`)
-    const loaderPossible = [req,req2,req3];
+    var req4 = require(`./map2.json`)
+    const loaderPossible = [req4,req,req2,req3];
      setLoader(loaderPossible[Math.floor(Math.random() * loaderPossible.length)])
   }, []);
 
