@@ -55,7 +55,7 @@ useEffect(() => {
     setLoading(false)
   })
   }
-  }, [onlyMyTrips]);
+  }, [onlyMyTrips,trips]);
   return (
     <>
     {loading ?
@@ -77,7 +77,7 @@ useEffect(() => {
       
       <View style={styles.trips}>
         {tripRendered.map((trip)=>
-        <TripsComponent trip={trip} key={trip.title} />
+        <TripsComponent trip={trip} key={trip.id} />
       )}
       </View>      
     </ScrollView>

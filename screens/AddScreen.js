@@ -57,14 +57,20 @@ const AddScreen = () => {
       "title": titleTrip,
       "type":`/api/types/${idType}`,
     }).then(res => {
-      console.log("try create trip")
-      console.log(res.data)
+      api
+      .get(`/api/user/me`, loadAuthorisationHeader(auth.token))
+      .then(resuser => {  
+        let trips = resuser.data.trips
+        console.log("work here")
+        // console.log(trips)
+        dispatch({type:"SET_USER",payload:{trips}})
       setLoading(false)
     }).catch(err => {
       console.log(err)
       setLoading(false)
     })
-  }
+  })
+}
 
   const addloc = (idTrip,latitude,longitude,title,description) => {
     if(!idTrip || !latitude || !longitude || !title || !description){
@@ -89,12 +95,20 @@ const AddScreen = () => {
       }).then(res => {
         console.log("try create loc")
         console.log(res.data)
-        setLoading(false)
+        api
+      .get(`/api/user/me`, loadAuthorisationHeader(auth.token))
+      .then(resuser => {  
+        let trips = resuser.data.trips
+        console.log("work here")
+        // console.log(trips)
+        dispatch({type:"SET_USER",payload:{trips}})
+      setLoading(false)
       }).catch(err => {
         console.log(err)
         setLoading(false)
       })
-  };
+  });
+}
 
   useEffect(() => {
     setLoading(true)

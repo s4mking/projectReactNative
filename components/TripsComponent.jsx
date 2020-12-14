@@ -51,7 +51,7 @@ const TripsComponent = ({trip}) => {
             </Text> */}
           </View>
           {trip.step.map((location,index)=>
-        <LocationComponent location={location} index={index} key={location.latitude} />
+        <LocationComponent location={location} index={index} key={location.id} />
       )}
         </View>
         ):null
