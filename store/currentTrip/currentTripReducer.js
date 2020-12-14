@@ -11,6 +11,12 @@ const currentTripReducer = (state = INITIAL_STATE, action) => {
         ...state,
         trip:action.payload.trip,
       };
+    case 'RESET_LOC':
+      return {
+        ...state,
+        trip:INITIAL_STATE.trip,
+        indexLoc:INITIAL_STATE.indexLoc
+      };
     case 'CURRENT':
       return {
         ...state,

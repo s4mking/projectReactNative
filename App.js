@@ -8,8 +8,12 @@ import LoadScreen from './screens/LoadScreen';
 import HomeScreen from './screens/HomeScreen';
 import TripScreen from './screens/TripScreen'
 import Direction from './screens/Direction';
+import PreMap from './screens/Direction/PreMap'
 import AddScreen from './screens/AddScreen';
 import AuthContext from './AuthContext';
+import { LogBox } from 'react-native';
+LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
+LogBox.ignoreAllLogs();//Ignore all log notifications
 import { Ionicons } from '@expo/vector-icons';
 import { api, loadAuthorisationHeader } from "./helpers/axios";
 const Stack = createStackNavigator();
@@ -138,7 +142,7 @@ export default function App({ navigation }) {
               inactiveTintColor: 'gray',
             }}
           >
-            <Tab.Screen name="Home" component={Direction} />
+            <Tab.Screen name="Home" component={PreMap} />
             <Tab.Screen name="Trip" component={TripScreen} />
             <Tab.Screen name="Add" component={AddScreen} />
           </Tab.Navigator>

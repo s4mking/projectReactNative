@@ -9,7 +9,7 @@ import { api, loadAuthorisationHeader } from "../helpers/axios";
 const SignInScreen = (props) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const test = useSelector(state => state.auth)
 
   const login = (email,password) => {
@@ -25,13 +25,13 @@ const SignInScreen = (props) => {
             console.log("this is the res")
             console.log(res.data.token);
             if (res.data.token != undefined) {
-              dispatch({type:"LOGIN",payload:{email:email,password:password,token:res.data.token}})
               AsyncStorage.setItem("password",password)
               AsyncStorage.setItem("email",email)
               api
               .get(`/api/user/me`, loadAuthorisationHeader(res.data.token))
-              .then(res => {
-                // console.log(res.data)
+              .then(resuser => {
+
+                dispatch({type:"LOGIN",payload:{email:email,password:password,id:resuser.data.id,token:res.data.token}})                // console.log(res.data)
                 let trips = res.data.trips
                 console.log("work here")
                 console.log(trips)
@@ -48,6 +48,9 @@ const SignInScreen = (props) => {
   }
   return (
     <View style={styles.container}>
+      <Text style={styles.intro}>
+        Bienvenue sur MyLittleParcours ,une application qui va vous permettre d'enregistrer vos parcours et de les réaliser ensuite grâce à notre système de géolocalisation .
+      </Text>
       <TextInput
         style={styles.input}
         placeholder="email"
@@ -55,6 +58,7 @@ const SignInScreen = (props) => {
         onChangeText={setEmail}
       />
       <TextInput
+        style={styles.input}
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
@@ -62,19 +66,31 @@ const SignInScreen = (props) => {
       />
 
       <Button title="Sign in" onPress={() => login(email,password) } />
-      <Button title="Register" onPress={() => null }/>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: 'center'
+    marginTop:70,
+  },
+  intro:{
+    textAlign:"center",
+    backgroundColor:"#23EDD8",
+    padding:5,
+    fontSize:17,
+    borderWidth:3,
+    borderColor:"#0988EB",
+    marginRight:50,
+    marginLeft:50
   },
   input: {
-    marginTop: 50
-  },
+    padding:5,
+    margin: 15,
+    height: 40,
+    borderColor: '#7a42f4',
+    borderWidth: 1
+ },
 })
 
 export default SignInScreen;
