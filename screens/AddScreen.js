@@ -32,13 +32,19 @@ const AddScreen = () => {
   const [descriptionTrip, setDescriptionTrip] = useState(null);
 
   const logout = () => {
+    dispatch({type:"LOADING"})
     AsyncStorage.removeItem('email').then(email=>{
       AsyncStorage.removeItem('password').then(pass=>{
+        AsyncStorage.removeItem('currentStep').then(email=>{
+          AsyncStorage.removeItem('currentIndex').then(pass=>{
+        dispatch({type:"RESET_LOC"})
         dispatch({type:"LOGOUT"})
+        dispatch({type:"END_LOADING"})
+          })
+        })
     })
   })
 }
-
   const addTrip = (idType,idNotation,titleTrip,descriptionTrip) => {
     if(!idType || !idNotation || !titleTrip || !descriptionTrip){
       Alert.alert("vous n'avez pas bien rempli tout les champs")

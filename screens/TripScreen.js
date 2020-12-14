@@ -28,9 +28,16 @@ const TripScreen = () => {
 
 
   const logout = () => {
+    dispatch({type:"LOADING"})
     AsyncStorage.removeItem('email').then(email=>{
       AsyncStorage.removeItem('password').then(pass=>{
+        AsyncStorage.removeItem('currentStep').then(email=>{
+          AsyncStorage.removeItem('currentIndex').then(pass=>{
+        dispatch({type:"RESET_LOC"})
         dispatch({type:"LOGOUT"})
+        dispatch({type:"END_LOADING"})
+          })
+        })
     })
   })
 }

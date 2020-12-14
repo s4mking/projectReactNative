@@ -8,6 +8,10 @@ export const setExistedTrip = ({trip,step}) => ({
   payload:{trip,step}
 });
 
+export const resetLoc = () => ({
+  type: 'RESET_LOC',
+});
+
 export const nextLoc = () => ({
   type: 'NEXT_LOC',
 });

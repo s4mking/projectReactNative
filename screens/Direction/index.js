@@ -16,13 +16,30 @@ const Direction = ({navigation}) => {
   const dispatch = useDispatch()
   const currentTrip = useSelector(state => state.currentTrip)
   const currentLoad = useSelector(state => state.loading)
+  console.log(currentTrip)
+  if(currentTrip.trip==null){
+    navigation.navigate('Trip')
+  }
+  // useEffect(()=>{
+  //   console.log("test daniel")
+  //   console.log(currentTrip)
+  //   if(currentTrip==undefined){
+  //     navigation.navigate('Trip')
+  //   }
+  // },[currentTrip])
+
 
   const logout = () => {
     dispatch({type:"LOADING"})
     AsyncStorage.removeItem('email').then(email=>{
       AsyncStorage.removeItem('password').then(pass=>{
+        AsyncStorage.removeItem('currentStep').then(email=>{
+          AsyncStorage.removeItem('currentIndex').then(pass=>{
+        dispatch({type:"RESET_LOC"})
         dispatch({type:"LOGOUT"})
         dispatch({type:"END_LOADING"})
+          })
+        })
     })
   })
 }
