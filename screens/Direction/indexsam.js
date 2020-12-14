@@ -42,8 +42,6 @@ class Direction extends Component {
   }
 
   componentDidMount() {
-    console.log("right here")
-    console.log(this.props.trips)
     //watcher to geoloc
     this.watchID = navigator.geolocation.watchPosition(
         position => {
@@ -105,8 +103,6 @@ class Direction extends Component {
 
   //in future need to separate in function
   detectDestination(){
-    console.log(this.state.distanceBetween)
-    console.log("distance entre")
     if(this.state.distanceBetween == 332){
       Alert.alert(
         'Vous êtes arrivés'
@@ -133,7 +129,6 @@ class Direction extends Component {
       dist = dist * 180/Math.PI;
       dist = dist * 60 * 1.1515;
       if (unit=="K") { dist = dist * 1.609344 }
-      console.log(dist.toFixed(2));
       if(dist.toFixed(2) < 0.10){
         Alert.alert(
           'Vous êtes arrivés'
@@ -175,10 +170,8 @@ class Direction extends Component {
              })
              this.setState({coords: coords})
              this.setState({x: "true"})
-             console.log(coords)
              return coords
          } catch(error) {
-           console.log('passe')
              this.setState({x: "error"})
              return error
          }

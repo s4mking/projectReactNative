@@ -16,18 +16,6 @@ const Direction = ({navigation}) => {
   const dispatch = useDispatch()
   const currentTrip = useSelector(state => state.currentTrip)
   const currentLoad = useSelector(state => state.loading)
-  console.log(currentTrip)
-  if(currentTrip.trip==null){
-    navigation.navigate('Trip')
-  }
-  // useEffect(()=>{
-  //   console.log("test daniel")
-  //   console.log(currentTrip)
-  //   if(currentTrip==undefined){
-  //     navigation.navigate('Trip')
-  //   }
-  // },[currentTrip])
-
 
   const logout = () => {
     dispatch({type:"LOADING"})
@@ -112,13 +100,9 @@ const Direction = ({navigation}) => {
   //detecte si on arrive proche de la cible si oui on affiche la modal avec les infos et on itere notre index de 1
   useEffect(()=>{
     const detectDestination = (e)=>{
-    console.log("distance between")
-    console.log(distanceBetween*1000)
     if((distanceBetween*1000) < 200){
       setModalVisible(true)
       setStepIterator(currentStepIterator+1)
-      console.log(currentStepIterator)
-      console.log(currentTrip.trip.step.length-1)
     if(currentStepIterator == (currentTrip.trip.step.length-1)){
         Alert.alert(
           'Le parcours est maintenant fini ^^'
@@ -126,7 +110,6 @@ const Direction = ({navigation}) => {
       setStepIterator(0)
       
     }
-    console.log(currentStepParser)
     if(typeof currentTrip.trip.step[currentStepParser+1] === 'undefined') {
       setStepParser(0)
   }else{
@@ -191,7 +174,6 @@ const Direction = ({navigation}) => {
     apikey="AIzaSyBBb9bOEPqf7g1NSx-TwAoAy-WdoiY4MvY" strokeColor="lightblue" strokeWidth={4}
     onReady={result => {
       setDistanceBetween(result.distance)
-      console.log(`Distance: ${result.distance} km`)
     }}
   />
       {!!latitude && !!longitude && <MapView.Marker

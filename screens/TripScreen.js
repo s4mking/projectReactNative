@@ -22,10 +22,6 @@ const TripScreen = () => {
   const auth = useSelector(state => state.auth)
   const dispatch = useDispatch()
   const currentTrip = useSelector(state => state.currentTrip)
-  console.log("all my trips")
-  console.log(trips)
-
-
 
   const logout = () => {
     dispatch({type:"LOADING"})

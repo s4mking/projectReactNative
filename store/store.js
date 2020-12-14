@@ -23,8 +23,6 @@ const store = () => {
         password: password
       })
       .then(res => {
-        console.log("this is the res")
-        console.log(res.data.token);
         if (res.data.token != undefined) {
           AsyncStorage.setItem( "userToken", res.data.token)
         } else {

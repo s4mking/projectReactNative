@@ -50,11 +50,6 @@ const AddScreen = () => {
       Alert.alert("vous n'avez pas bien rempli tout les champs")
     }
     setLoading(true)
-    console.log(idType)
-    console.log(idNotation)
-    console.log(titleTrip)
-    console.log(descriptionTrip)
-    console.log(auth.id)
     api
     .post("/api/trips", {
       "notation":parseInt(idNotation),
@@ -67,8 +62,6 @@ const AddScreen = () => {
       .get(`/api/user/me`, loadAuthorisationHeader(auth.token))
       .then(resuser => {  
         let trips = resuser.data.trips
-        console.log("work here")
-        // console.log(trips)
         dispatch({type:"SET_USER",payload:{trips}})
       setLoading(false)
     }).catch(err => {
@@ -83,14 +76,7 @@ const AddScreen = () => {
       Alert.alert("vous n'avez pas bien rempli tout les champs")
     }
     setLoading(true)
-    console.log(latitude)
-    console.log(longitude)
-
-    console.log(idTrip)
-
-    console.log(title)
-    console.log(description)
-
+    .log(latitude)
     api
       .post("/api/locations", {
         "latitude":parseFloat(latitude),
@@ -99,14 +85,10 @@ const AddScreen = () => {
         "title": title,
         "trip":`/api/trips/${idTrip}`,
       }).then(res => {
-        console.log("try create loc")
-        console.log(res.data)
         api
       .get(`/api/user/me`, loadAuthorisationHeader(auth.token))
       .then(resuser => {  
         let trips = resuser.data.trips
-        console.log("work here")
-        // console.log(trips)
         dispatch({type:"SET_USER",payload:{trips}})
       setLoading(false)
       }).catch(err => {
@@ -231,7 +213,7 @@ const AddScreen = () => {
     placeholderTextColor = "#9a73ef"
         style={styles.input}
         placeholder="title"
-        value={title}
+        value={titleTrip}
         onChangeText={setTitleTrip}
       />
       <TextInput
@@ -239,7 +221,7 @@ const AddScreen = () => {
       placeholderTextColor = "#9a73ef"
           style={styles.input}
         placeholder="description"
-        value={description}
+        value={descriptionTrip}
         onChangeText={setDescriptionTrip}
       />
 

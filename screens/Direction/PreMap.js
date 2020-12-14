@@ -9,15 +9,9 @@ const PreMap = ({navigation}) => {
   const [loading, setLoading] = useState(true);
   const [error, seterror] = useState(false);
   useEffect(()=>{
-    console.log(currentTrip)
-    console.log(navigation)
-    console.log("daniel test here")
     if(currentTrip.trip!==null){
-    console.log(currentTrip.trip.step[currentTrip.indexLoc])
     setLoading(false)
     }else{
-      console.log("here big error")
-      console.log(navigation)
       seterror(true)
       // setLoading(false)
       // navigation.navigate('Trip')
@@ -31,7 +25,6 @@ const PreMap = ({navigation}) => {
   },[error])
 
   useEffect(()=>{
-    console.log("i try to see if present")
     if(currentTrip.trip !== null){
       setLoading(false)
     }
