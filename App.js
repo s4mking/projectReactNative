@@ -39,13 +39,14 @@ export default function App({ navigation }) {
             console.log("this is the res")
             const token =res.data.token;
             if (res.data.token != undefined) {
-              dispatch({type:"LOGIN",payload:{email:email,password:password,token:res.data.token}})
               api
               .get(`/api/user/me`, loadAuthorisationHeader(res.data.token))
-              .then(res => {
-                // console.log(res.data)
+              .then(resuser => {
+                dispatch({type:"LOGIN",payload:{email:email,password:password,id:resuser.data.id,token:res.data.token}})
+                console.log(res.data)
+                console.log("i want to test here")
                 
-                let trips = res.data.trips
+                let trips = resuser.data.trips
                 console.log("work here")
                 // console.log(trips)
                 dispatch({type:"SET_USER",payload:{trips}})

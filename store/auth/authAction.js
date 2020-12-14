@@ -1,7 +1,7 @@
-export const login = ({email,password,token}) => (
+export const login = ({email,password,id,token}) => (
   {
     type: 'LOGIN',
-    payload: {email,password,token},
+    payload: {email,password,id,token},
   }
 );
 

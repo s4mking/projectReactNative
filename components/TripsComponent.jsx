@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     borderColor: "#20232a",
     borderWidth: 4,
     padding: 4,
-    marginBottom:4
+    marginBottom:10
   },
   centeredText: {
     textAlign: "center",

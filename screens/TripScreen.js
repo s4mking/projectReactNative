@@ -1,10 +1,11 @@
 
-import React, { PureComponent, useEffect } from 'react';
+import React, { PureComponent, useEffect,useState } from 'react';
 import { AsyncStorage, View,Text,TextInput,Button,StyleSheet } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
-
+import LoadScreen from './LoadScreen';
+import { api, loadAuthorisationHeader } from "../helpers/axios";
 import TripsComponent from '../components/TripsComponent';
 import RNPickerSelect from 'react-native-picker-select';
 import { useDispatch } from 'react-redux'
@@ -12,10 +13,19 @@ import { useDispatch } from 'react-redux'
 
 
 const TripScreen = () => {
-  const trips = useSelector(state => state.trips.trips)
+  const [onlyMyTrips, setOnlyMyTrips] = useState(true);
+  const [loading, setLoading] = useState(false);
+
+  const trips = useSelector(state => state.trips.trips)  
+  const [tripRendered, setTripRendered] = useState(trips);
+
   const auth = useSelector(state => state.auth)
   const dispatch = useDispatch()
   const currentTrip = useSelector(state => state.currentTrip)
+  console.log("all my trips")
+  console.log(trips)
+
+
 
   const logout = () => {
     AsyncStorage.removeItem('email').then(email=>{
@@ -24,32 +34,55 @@ const TripScreen = () => {
     })
   })
 }
+useEffect(() => {
+  console.log("tripscreen")
+  console.log(tripRendered)
+}, []);
   useEffect(() => {
-  //  console.log("trips screen")
-  console.log("begin new trip")
-   console.log(currentTrip)
-  }, [currentTrip]);
+    setLoading(true)
+  if(onlyMyTrips){
+    setTripRendered(trips)
+    setLoading(false)
+  }else{
+    api
+  .get(`/api/trips`)
+  .then(res => {
+    setTripRendered(res.data);
+    setLoading(false)
+  })
+  .catch(err => {
+    console.log(err)
+    setLoading(false)
+  })
+  }
+  }, [onlyMyTrips]);
   return (
     <>
+    {loading ?
+    (<LoadScreen />)
+    :
+    <>
+      <View style={styles.button}>
+      {onlyMyTrips ? 
+      (<Button title="Voir la liste de tout les trips de l'appli" onPress={() => setOnlyMyTrips(false) } />)
+    :
+    ( <Button title="Voir seuleument vos trips" onPress={() => setOnlyMyTrips(true) } />)}
+    </View>
+
     <Ionicons name={'ios-log-out'} style={{zIndex: 100000,marginTop:30,marginLeft:20}} color={'gray'} size={50}
         onStartShouldSetResponder={() => logout()} />
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>Voici la liste de vos différents trips</Text>
-      <RNPickerSelect
-            onValueChange={(value) => console.log(value)}
-            items={[
-                { label: 'Football', value: 'football' },
-                { label: 'Baseball', value: 'baseball' },
-                { label: 'Hockey', value: 'hockey' },
-            ]}
-        />
+  <Text style={styles.title}>{onlyMyTrips ?"Voici la liste de vos différents trips":"Voici la liste de tout les trips créés dans l'application" }</Text>
+      
+      
       <View style={styles.trips}>
-        {trips.map((trip)=>
+        {tripRendered.map((trip)=>
         <TripsComponent trip={trip} key={trip.title} />
       )}
-      </View>
-      
+      </View>      
     </ScrollView>
+    </>
+  }
     </>
   );
 };
@@ -58,6 +91,9 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 24,
     backgroundColor: "#f2f2f2",
+  },
+  button:{
+    marginTop: 46,
   },
   title: {
     marginTop: 16,

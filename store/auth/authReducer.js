@@ -2,6 +2,7 @@
 const INITIAL_STATE = {
   email:null,
   password:null,
+  id:null,
   token:null
 }
 
@@ -12,7 +13,8 @@ const authReducer = (state = INITIAL_STATE, action) => {
         ...state,
         email:action.payload.email,
         password:action.payload.password,
-        token:action.payload.token
+        id:action.payload.id,
+        token:action.payload.token,
       };
     case 'LOGOUT':
       return {

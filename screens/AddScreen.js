@@ -17,6 +17,10 @@ const AddScreen = () => {
   const auth = useSelector(state => state.auth)
   const currentTrip = useSelector(state => state.currentTrip)
   const [dataTrip, setDataTrip] = useState(false);
+  const [notationTrip, setNotationTrip] = useState(false);
+  const [dataType, setDataType] = useState(false);
+  const [idType, setIdType] = useState(null);
+  const [idNotation, setIdNotation] = useState(null);
 
   const [latitude, setLatitude] = useState(null);
   const [idTrip, setIdTrip] = useState(null);
@@ -35,7 +39,32 @@ const AddScreen = () => {
   })
 }
 
+  const addTrip = (idType,idNotation,titleTrip,descriptionTrip) => {
+    setLoading(true)
+    console.log(idType)
+    console.log(idNotation)
+    console.log(titleTrip)
+    console.log(descriptionTrip)
+    console.log(auth.id)
+    api
+    .post("/api/trips", {
+      "notation":parseInt(idNotation),
+      "description":descriptionTrip,
+      "author":`/api/people/${auth.id}`,
+      "title": titleTrip,
+      "type":`/api/types/${idType}`,
+    }).then(res => {
+      console.log("try create trip")
+      console.log(res.data)
+      setLoading(false)
+    }).catch(err => {
+      console.log(err)
+      setLoading(false)
+    })
+  }
+
   const addloc = (idTrip,latitude,longitude,title,description) => {
+    setLoading(true)
     console.log(latitude)
     console.log(longitude)
 
@@ -54,26 +83,45 @@ const AddScreen = () => {
       }).then(res => {
         console.log("try create loc")
         console.log(res.data)
+        setLoading(false)
       }).catch(err => {
         console.log(err)
+        setLoading(false)
       })
   };
 
   useEffect(() => {
     setLoading(true)
-
-    setTimeout(() => {
-      setLoading(false)
-      }, 5000);
+    console.log("auth",auth)
+    // setLoading(false)
   //  console.log("trips screen")
-    let data = []
-  console.log("begin new trip")
+    let data = [];
+    let itemType = [];
+    let notationType = [];
+    for (let i = 1; i <= 10; i++) {
+      notationType.push({label:i.toString(),value:i.toString()})
+    }
+    setNotationTrip(notationType)
   for (const property in myTrips) {
     let title = myTrips[property].title
     let id = myTrips[property].id
     data.push({label:title,value:id})
   }
   setDataTrip(data)
+  api
+  .get(`/api/types`)
+  .then(res => {
+    let types=(res.data)
+    types.forEach(type => {
+      itemType.push({label:type.name,value:type.id})
+    });
+    setDataType(itemType);
+    setLoading(false)
+  })
+  .catch(err => {
+    console.log(err)
+    setLoading(false)
+  })
   }, []);
   return (
     <>
@@ -88,8 +136,11 @@ const AddScreen = () => {
         <Text style={styles.title}>
           Add location to one of your trip
         </Text>
-        {dataTrip ? 
+        {dataTrip ?
+            
       <RNPickerSelect
+            value={idTrip}
+            placeholder={{}}
             onValueChange={(value) => setIdTrip(value)}
             items={dataTrip}
         /> : null }
@@ -115,8 +166,40 @@ const AddScreen = () => {
         value={description}
         onChangeText={setDescription}
       />
-      <Button title="Sign in" onPress={() => addloc(idTrip,latitude,longitude,title,description) } />
+      <Button title="Add new location" onPress={() => addloc(idTrip,latitude,longitude,title,description) } />
+      <Text style={styles.title}>
+         Add new trip
+        </Text>
+        {dataType ?
+            
+            <RNPickerSelect
+                  value={idType}
+                  placeholder={{}}
+                  onValueChange={(value) => setIdType(value)}
+                  items={dataType}
+              /> : null }
+        {notationTrip ?
+        <RNPickerSelect
+                  value={idNotation}
+                  placeholder={{}}
+                  onValueChange={(value) => setIdNotation(value)}
+                  items={notationTrip}
+              /> :
+              null}
+        
 
+    <TextInput
+        placeholder="title"
+        value={title}
+        onChangeText={setTitleTrip}
+      />
+      <TextInput
+        placeholder="description"
+        value={description}
+        onChangeText={setDescriptionTrip}
+      />
+
+      <Button title="Add new trip" onPress={() => addTrip(idType,idNotation,titleTrip,descriptionTrip) } />
 
       </View>
 

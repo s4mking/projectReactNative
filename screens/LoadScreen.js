@@ -1,35 +1,33 @@
-import React from 'react';
+import React, {useEffect,useState} from 'react';
 import { StyleSheet,View,Text } from 'react-native';
 import AnimatedLoader from "react-native-animated-loader";
 import Icon from 'react-native-vector-icons/FontAwesome';
 
+const LoadScreen = () => {
+  const [loader, setLoader] = useState(undefined);
+  useEffect(() => {
+    var req = require(`./pin.json`)
+    var req2 = require(`./pin2.json`)
+    var req3 = require(`./map.json`)
+    const loaderPossible = [req,req2,req3];
+     setLoader(loaderPossible[Math.floor(Math.random() * loaderPossible.length)])
+  }, []);
 
-export default class LoadScreen extends React.Component {
-  render() {
     return (
-      // <View>
-      //   <Text>
-      //     lll;l;l
-      //   </Text>
-      // </View>
       <View>
-      <AnimatedLoader
-        visible={true}
-        overlayColor="rgba(255,255,255,0.75)"
-        source={require("./pin2.json")}
-        animationStyle={styles.lottie}
-        speed={1}
-      />
-       <Icon.Button name="facebook" backgroundColor="#3b5998">
-    <Text style={{ fontSize: 15 }}>
-      Login with Facebook
-    </Text>
-  </Icon.Button>
+        {loader ?  <AnimatedLoader
+         visible={true}
+         overlayColor="rgba(255,255,255,0.75)"
+         source={loader}
+         animationStyle={styles.lottie}
+         speed={1}
+       />  : null}
       </View>
      
     );
-  }
-}
+};
+
+export default LoadScreen;
 
 const styles = StyleSheet.create({
   lottie: {

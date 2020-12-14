@@ -32,7 +32,6 @@ const SignInScreen = (props) => {
               .get(`/api/user/me`, loadAuthorisationHeader(res.data.token))
               .then(res => {
                 // console.log(res.data)
-                
                 let trips = res.data.trips
                 console.log("work here")
                 console.log(trips)
@@ -40,7 +39,6 @@ const SignInScreen = (props) => {
                 dispatch({type:"END_LOADING"})
                 })
               .catch(err => console.log(err));
-            
           }
         }).catch(err =>{
           dispatch({type:"END_LOADING"})
