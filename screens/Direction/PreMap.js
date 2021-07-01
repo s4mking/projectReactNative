@@ -21,6 +21,7 @@ const PreMap = ({navigation}) => {
   useEffect(()=>{
     if(error==true){
       navigation.navigate('Trip')
+      setLoading(false)
     }
   },[error])
 

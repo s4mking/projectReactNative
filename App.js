@@ -107,11 +107,13 @@ export default function App({ navigation }) {
         
           <NavigationContainer>
 
+            <PreMap/>
+
             {/* {route.name == "Home" ? null :<View style={styles.logout}>
               <Ionicons name={'ios-log-out'} style={{zIndex: 100000,marginTop:30,marginLeft:20}} color={'gray'} size={50} />
             </View>} */}
             
-          <Tab.Navigator
+          {/* <Tab.Navigator
           
             screenOptions={({ route }) => ({
               headerStyle: {
@@ -138,14 +140,14 @@ export default function App({ navigation }) {
               },
             })}
             tabBarOptions={{
-              activeTintColor: 'tomato',
+              activeTintColor: '#C01660',
               inactiveTintColor: 'gray',
             }}
           >
             <Tab.Screen name="Home" component={PreMap} />
             <Tab.Screen name="Trip" component={TripScreen} />
             <Tab.Screen name="Add" component={AddScreen} />
-          </Tab.Navigator>
+          </Tab.Navigator> */}
         </NavigationContainer>
         )
       }

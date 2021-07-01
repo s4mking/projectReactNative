@@ -43,49 +43,49 @@ useEffect(() => {
 }, []);
   useEffect(() => {
     setLoading(true)
-  if(onlyMyTrips){
-    setTripRendered(trips)
-    setLoading(false)
-  }else{
-    api
-  .get(`/api/trips`)
-  .then(res => {
-    setTripRendered(res.data);
-    setLoading(false)
-  })
-  .catch(err => {
-    console.log(err)
-    setLoading(false)
-  })
-  }
+    if(onlyMyTrips){
+      setTripRendered(trips)
+      setLoading(false)
+    }
+    else {
+      api
+      .get(`/api/trips`)
+      .then(res => {
+        setTripRendered(res.data);
+        setLoading(false)
+      })
+      .catch(err => {
+        console.log(err)
+        setLoading(false)
+      })
+    }
   }, [onlyMyTrips,trips]);
+
   return (
     <>
-    {loading ?
-    (<LoadScreen />)
-    :
-    <>
-      <View style={styles.button}>
-      {onlyMyTrips ? 
-      (<Button title="Voir la liste de tout les trips de l'appli" onPress={() => setOnlyMyTrips(false) } />)
-    :
-    ( <Button title="Voir seuleument vos trips" onPress={() => setOnlyMyTrips(true) } />)}
-    </View>
+      {loading ?
+        (<LoadScreen />)
+      :
+        <>
+          <View style={styles.button}>
+            {onlyMyTrips ? 
+              (<Button title="Voir la liste de tout les trips de l'appli" onPress={() => setOnlyMyTrips(false) } />)
+              : (<Button title="Voir seuleument vos trips" onPress={() => setOnlyMyTrips(true) } />)
+            }
+          </View>
 
-    <Ionicons name={'ios-log-out'} style={{zIndex: 100000,marginTop:30,marginLeft:20}} color={'gray'} size={50}
-        onStartShouldSetResponder={() => logout()} />
-    <ScrollView style={styles.container}>
-  <Text style={styles.title}>{onlyMyTrips ?"Voici la liste de vos différents trips":"Voici la liste de tout les trips créés dans l'application" }</Text>
-      
-      
-      <View style={styles.trips}>
-        {tripRendered.map((trip)=>
-        <TripsComponent trip={trip} key={trip.id} />
-      )}
-      </View>      
-    </ScrollView>
-    </>
-  }
+          <Ionicons name={'ios-log-out'} style={{zIndex: 100000,marginTop:30,marginLeft:20}} color={'gray'} size={50} onStartShouldSetResponder={() => logout()} />
+          <ScrollView style={styles.container}>
+            <Text style={styles.title}>{onlyMyTrips ?"Voici la liste de vos différents trips":"Voici la liste de tout les trips créés dans l'application" }</Text>
+            
+            <View style={styles.trips}>
+              {tripRendered.map((trip)=>
+              <TripsComponent trip={trip} key={trip.id} />
+            )}
+            </View>      
+          </ScrollView>
+        </>
+      }
     </>
   );
 };

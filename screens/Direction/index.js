@@ -2,12 +2,23 @@ import React, { Component,useState,useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import MapViewDirections from 'react-native-maps-directions';
 import { Ionicons } from '@expo/vector-icons';
-import { StyleSheet, Text,View, TouchableOpacity,Alert,AsyncStorage,Modal,TouchableHighlight } from "react-native";
+import { StyleSheet, Text,View, TouchableOpacity,Alert,AsyncStorage,Modal,TouchableHighlight,Image } from "react-native";
 import MapView, {
     PROVIDER_GOOGLE
   } from 'react-native-maps';
   import haversine from "haversine";
   import { useDispatch } from 'react-redux'
+import Pin from '../../images/Pin.png'
+import Logo from '../../images/Logo.png'
+import user from '../../images/user.png'
+import heart from '../../images/heart.png'
+import clock from '../../images/clock.png'
+import subscribe from '../../images/Abonnement.png'
+import sound from '../../images/sound.png'
+import play from '../../images/Play.png'
+import pause from '../../images/Pause.png'
+import gear from '../../images/Gear.png'
+
 
 const LATITUDE_DELTA = 0.009;
 const LONGITUDE_DELTA = 0.009;
@@ -45,9 +56,9 @@ const Direction = ({navigation}) => {
     const [target,setTarget]= useState(0);
     const [error,setError]= useState(null);
     const [modalVisible, setModalVisible] = useState(false);
+    const [started, setStarted] = useState(false)
+    const [selectedTrip, setSelectedTrip] = useState(undefined)
 
-    useEffect(()=>{
-    },[currentTrip.trip.step[currentStepParser]])
     useEffect(()=>{
       // ne marche pas normalement plus propre que de passer à chaque fois le tableau en entier
       setStep(currentTrip.trip.step[currentStepParser])
@@ -68,7 +79,7 @@ const Direction = ({navigation}) => {
                   );
               }
             } else {
-              coordinate.timing(newCoordinate).start();
+              // coordinate.timing(newCoordinate).start();
             }
             //quand l'utilisateur a bougé on recalcule totues les distances
               setLatitude(latitude)
@@ -132,11 +143,76 @@ const Direction = ({navigation}) => {
         latitudeDelta: LATITUDE_DELTA,
         longitudeDelta: LONGITUDE_DELTA
       });
+
+      const mapStyle = [
+        {
+         "elementType": "labels",
+         "stylers": [
+          {
+           "weight": 1
+          }
+         ]
+        },
+        {
+         "featureType": "poi",
+         "elementType": "geometry.fill",
+         "stylers": [
+          {
+           "color": "#FFE5EE"
+          }
+         ]
+        },
+        {
+         "featureType": "poi.attraction",
+         "elementType": "labels.icon",
+         "stylers": [
+          {
+           "color": "#4CA9DF"
+          }
+         ]
+        },
+        {
+         "featureType": "poi.business",
+         "elementType": "labels.icon",
+         "stylers": [
+          {
+           "visibility": "off"
+          }
+         ]
+        },
+        {
+         "featureType": "poi.business",
+         "elementType": "labels.text",
+         "stylers": [
+          {
+           "visibility": "off"
+          }
+         ]
+        },
+        {
+         "featureType": "poi.park",
+         "elementType": "geometry.fill",
+         "stylers": [
+          {
+           "color": "#B1ECCA"
+          }
+         ]
+        },
+        {
+         "featureType": "transit",
+         "stylers": [
+          {
+           "visibility": "off"
+          }
+         ]
+        }
+       ]
   
       return (
         <>
-        <><Ionicons name={'ios-log-out'} style={{zIndex: 100000,marginTop:30,marginLeft:20}} color={'gray'} size={50}
-        onStartShouldSetResponder={() => logout()} />
+        <>
+        {/* <Ionicons name={'ios-log-out'} style={{zIndex: 100000,marginTop:30,marginLeft:20}} color={'gray'} size={50}
+        onStartShouldSetResponder={() => logout()} /> */}
         <View style={styles.container}>
         <Modal
         animationType="slide"
@@ -161,47 +237,147 @@ const Direction = ({navigation}) => {
         <MapView
         style={styles.map}
         provider={PROVIDER_GOOGLE}
-        showUserLocation
-        followUserLocation
+        showsUserLocation
+        followsUserLocation
         loadingEnabled
         region={getMapRegion()}
+        customMapStyle={mapStyle}
       >
-<MapViewDirections
-    origin={{"latitude":latitude,"longitude":longitude}}
-    mode="WALKING"
-    language='fr'
-    destination={{"latitude":currentTrip.trip.step[currentStepParser].latitude,"longitude":currentTrip.trip.step[currentStepParser].longitude}}
-    apikey="AIzaSyBBb9bOEPqf7g1NSx-TwAoAy-WdoiY4MvY" strokeColor="lightblue" strokeWidth={4}
-    onReady={result => {
-      setDistanceBetween(result.distance)
-    }}
-  />
-      {!!latitude && !!longitude && <MapView.Marker
+        {started && selectedTrip && <MapViewDirections
+          origin={{"latitude":latitude,"longitude":longitude}}
+          mode="WALKING"
+          language='fr'
+          destination={{"latitude":selectedTrip.latitude,"longitude":selectedTrip.longitude}}
+          apikey="AIzaSyBBb9bOEPqf7g1NSx-TwAoAy-WdoiY4MvY" strokeColor="#C01660" strokeWidth={4}
+          onReady={result => {
+            setDistanceBetween(result.distance)
+          }}
+        />}
+      {/* {!!latitude && !!longitude && <MapView.Marker
          coordinate={{"latitude":latitude,"longitude":longitude}}
          title={"Your Location"}
-       />}
+       />} */}
 
-       {!!currentTrip.trip.step[currentStepParser].latitude && !!currentTrip.trip.step[currentStepParser].longitude && <MapView.Marker
+       {started && currentTrip.trip.step.map((step, index) => (
+         <MapView.Marker
+          key={index}
+          coordinate={{
+            "latitude": step.latitude,
+            "longitude": step.longitude
+          }}
+          title={step.title}
+          onPress={() => setSelectedTrip(step)}
+         >
+           <Image width={10} source={Pin} />
+         </MapView.Marker>
+       ))}
+       {/* {started && currentTrip.trip.step[currentStepParser].latitude && currentTrip.trip.step[currentStepParser].longitude && <MapView.Marker
           coordinate={{"latitude":currentTrip.trip.step[currentStepParser].latitude,"longitude":currentTrip.trip.step[currentStepParser].longitude}}
-          title={"Your Destination"}
-        />}
+          title={"Your Destination"}><Image width={10} source={Pin} /></MapView.Marker>} */}
+
+          {started && <MapView.Circle
+            center={{"latitude":latitude,"longitude":longitude}}
+            radius={500}
+            fillColor="#C0166033"
+            strokeColor="#C0166033"
+          />}
       </MapView>
-      <View style={styles.buttonContainer}>
-          <TouchableOpacity  style={[styles.bubble, styles.button,styles.opacityContainer]}>
-            <Text style={styles.bottomBarContent}>
-              Etape {(currentStepParser + 1)} / {(currentTrip.trip.step.length)}
-            </Text>
-            <Text style={styles.bottomBarContent}>
-              Vous êtes à {(distanceBetween.toFixed(2))} km de la cible
-            </Text>
+      <View style={styles.topBar}>
+        <Image source={Logo} />
+        <View style={styles.tobBarBtns}>
+          <TouchableOpacity style={styles.tobBarBtn}>
+            <Image source={user} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.tobBarBtn}>
+            <Image source={heart} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.tobBarBtn}>
+            <Image source={clock} />
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.tobBarBtn, styles.plainTopBtn]}>
+            <Image source={subscribe} />
           </TouchableOpacity>
         </View>
+      </View>
+      {started && selectedTrip && <View style={styles.buttonContainer}>
+        <TouchableOpacity  style={[styles.bubble, styles.button,styles.opacityContainer]}>
+          {/* <Text style={styles.bottomBarContent}>
+            Etape {(currentStepParser + 1)} / {(currentTrip.trip.step.length)}
+          </Text> */}
+          <Text style={styles.tripTitle}>
+            {selectedTrip.title}
+          </Text>
+          <Text style={styles.bottomBarContent}>
+            {(distanceBetween.toFixed(2))}km à vol d'oiseau !
+          </Text>
+        </TouchableOpacity>
+      </View>}
+      <View style={styles.bottomBar}>
+        <TouchableOpacity>
+          <Image source={sound} />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.playBtn} onPress={() => setStarted(!started)}>
+          <Image source={started ? pause : play} />
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Image source={gear} />
+        </TouchableOpacity>
+      </View>
     </View></>
     </>
     );
   }
 
 const styles = StyleSheet.create({
+  topBar: {
+    // ...StyleSheet.absoluteFillObject,
+    position: "absolute",
+    width: '100%',
+    height: 85,
+    top: 0,
+    left: 0,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    zIndex: 100000,
+    backgroundColor: '#ffffff',
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingBottom: 5,
+  },
+  tobBarBtns: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  tobBarBtn: {
+    width: 45,
+    height: 45,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  plainTopBtn: {
+    marginTop: 3,
+  },
+  bottomBar: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    width: '100%',
+    height: 130,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 100000,
+    backgroundColor: '#ffffff',
+  },
+  playBtn: {
+    width: 100,
+    height: 100,
+    marginLeft: 25,
+    marginRight: 25,
+  },
   map: {
     position: 'absolute',
     top: 0,
@@ -235,15 +411,22 @@ const styles = StyleSheet.create({
     marginHorizontal: 10
   },
   buttonContainer: {
+    position: 'absolute',
+    bottom: 120,
     flexDirection: "row",
     marginVertical: 20,
     backgroundColor: "transparent"
   },
   bottomBarContent:{
-    color:"red"
+    color:"black"
   },
   opacityContainer: {
-    backgroundColor: "#61dafb"
+    backgroundColor: "#fff"
+  },
+  tripTitle: {
+    color: '#C01660',
+    fontWeight: '700',
+    fontSize: 18,
   },
   modalView: {
     margin: 20,
